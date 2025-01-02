@@ -1,0 +1,9 @@
+.idea
+homophone*
+
+*.exe
+*.json
+*.subst
+*.txt
+*.zip
+*.zipx
