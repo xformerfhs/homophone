@@ -26,18 +26,45 @@
 //    2025-01-02: V1.0.0: Created.
 //
 
-// Package filehelper contains file utilities missing from the Go base libraries.
-package filehelper
+package main
 
 import (
 	"fmt"
 	"os"
 )
 
-// CloseFile closes a file and reports an error, if it occurs.
-func CloseFile(file *os.File) {
-	err := file.Close()
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "error closing file '%s': %v\n", file.Name(), err)
-	}
+// ******** Private constants ********
+
+const (
+	rcOK  = 0
+	rcErr = 1
+)
+
+// ******** Private functions ********
+
+func printErrorf(msgFormat string, args ...any) int {
+	return printError(fmt.Sprintf(msgFormat, args...))
+}
+
+func printError(msg string) int {
+	_, _ = fmt.Fprintln(os.Stderr)
+	_, _ = fmt.Fprintln(os.Stderr, msg)
+
+	return rcErr
+}
+
+func printErrorfUsage(msgFormat string, args ...any) int {
+	return printErrorUsage(fmt.Sprintf(msgFormat, args...))
+}
+
+func printErrorUsage(msg string) int {
+	_, _ = fmt.Fprintln(os.Stderr)
+	_, _ = fmt.Fprintln(os.Stderr, msg)
+
+	return printUsage()
+}
+
+func printUsage() int {
+	_, _ = fmt.Fprintln(os.Stderr, "\nUsage:\n   encrypt {file} [{noOther}]\n   decrypt {file} {subst file}")
+	return rcErr
 }
