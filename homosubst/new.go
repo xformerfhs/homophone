@@ -35,15 +35,17 @@ import (
 	"fmt"
 	"homophone/filehelper"
 	"homophone/randomlist"
+	"homophone/slicehelper"
 	"math"
-	"math/rand"
+	"math/rand/v2"
 	"os"
 	"unicode"
 )
 
 // ******** Private constants ********
 
-var substitutionAlphabet = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`
+var substitutionAlphabet = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`
+var requiredSubstitutionAlphabetSize = uint32(len(substitutionAlphabet))
 
 // sourceAlphabetSize contains the size of the alphabet to map, i.e. A-Z.
 const sourceAlphabetSize uint16 = 26
@@ -130,9 +132,11 @@ func getSubstitutionLengths(sourceFrequencies []int, totalCount int, substitutio
 		// 1. Calculate the substitution lengths from the frequencies.
 		resultCount := uint16(0)
 		for i, f := range sourceFrequencies {
-			count := uint16(math.Max(math.Round(float64(f)/countPerSource), 1.0))
-			result[i] = count
-			resultCount += count
+			if f != 0 {
+				count := hillHuntingtonRound(f, countPerSource)
+				result[i] = count
+				resultCount += count
+			}
 		}
 
 		// 2. If the number is not correct, make a bisection.
@@ -150,7 +154,11 @@ func getSubstitutionLengths(sourceFrequencies []int, totalCount int, substitutio
 		// 3. Halve the step size and bail out if there were too many tries.
 		stepSize *= 0.5
 		if stepSize < stepThreshold {
-			return nil, errors.New(`unable to find a distribution`)
+			if randomAdjustment(result, substitutionAlphabetSize, resultCount) == 0 {
+				break
+			} else {
+				return nil, errors.New(`unable to find a distribution`)
+			}
 		}
 	}
 
@@ -178,11 +186,59 @@ func generateSubstitutions(
 // getSubstitutionAlphabetIndex gets the substitution index into the substitution alphabet.
 func getSubstitutionAlphabetIndex(used []bool, usedSize uint16) int {
 	for {
-		i := rand.Intn(int(usedSize))
+		i := rand.IntN(int(usedSize))
 
 		if !used[i] {
 			used[i] = true
 			return i
 		}
 	}
+}
+
+// hillHuntingRound rounds the quotient of count/countPerSource according to the
+// Hill/Huntington method (https://en.wikipedia.org/wiki/Huntington%E2%80%93Hill_method).
+func hillHuntingtonRound(count int, countPerSource float64) uint16 {
+	proportion := float64(count) / countPerSource
+	minProportion := math.Floor(proportion)
+	maxProportion := minProportion + 1
+	roundingBoundary := math.Sqrt(minProportion * maxProportion)
+	if proportion < roundingBoundary {
+		return uint16(minProportion)
+	} else {
+		return uint16(maxProportion)
+	}
+}
+
+// randomAdjustment makes random adjustments to the count until the count matches the wanted count.
+func randomAdjustment(substitutionCount []uint16, wantedCount uint16, currentCount uint16) int16 {
+	diffCount := int16(currentCount) - int16(wantedCount)
+	eligibleIndices := make([]int, 0)
+	substitutionLength := len(substitutionCount)
+	for i := 0; i < substitutionLength; i++ {
+		if substitutionCount[i] > 1 {
+			eligibleIndices = append(eligibleIndices, i)
+		}
+	}
+
+	eligibleLength := len(eligibleIndices)
+	for diffCount != 0 && eligibleLength != 0 {
+		i := rand.IntN(eligibleLength)
+		si := eligibleIndices[i]
+		c := substitutionCount[si]
+		if diffCount > 0 {
+			c--
+		} else {
+			c++
+		}
+
+		substitutionCount[si] = c
+		diffCount--
+
+		if diffCount != 0 {
+			eligibleIndices = slicehelper.RemoveNoOrder(eligibleIndices, i)
+			eligibleLength--
+		}
+	}
+
+	return diffCount
 }

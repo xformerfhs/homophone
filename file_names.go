@@ -34,21 +34,30 @@ import (
 	"strings"
 )
 
+// ******** Private constants ********
+
+// decryptedMarker is the last part of the default file name for an decrypted file.
+const decryptedMarker = `_decrypted`
+
+// homophoneMarker is the last part of the default file name for an encrypted file.
+const homophoneMarker = `_homophone`
+
 // ******** Public functions ********
 
 // buildDecryptOutFilePath builds the file path of the decrypted output file.
 func buildDecryptOutFilePath(filePath string) string {
-	return buildFilePathWithMarker(filePath, `decrypted`)
+	return buildFilePathWithMarker(filePath, decryptedMarker)
 }
 
 // buildEncryptOutFilePath builds the file path of the encrypted output file.
 func buildEncryptOutFilePath(filePath string) string {
-	return buildFilePathWithMarker(filePath, `homophone`)
+	return buildFilePathWithMarker(filePath, homophoneMarker)
 }
 
 // buildSubstFilePath builds the file path of the substitution file.
 func buildSubstFilePath(filePath string) string {
-	dir, base, ext := filehelper.PathComponents(filePath)
+	dir, base, ext := cleanPathComponents(filePath)
+	
 	if len(ext) > 0 {
 		base = strings.TrimSuffix(base, ext) + `_` + ext[1:]
 	}
@@ -58,8 +67,20 @@ func buildSubstFilePath(filePath string) string {
 
 // ******** Private functions ********
 
+// cleanPathComponents returns the directory, base name and extension
+// with the program's markers removed from base name.
+func cleanPathComponents(filePath string) (string, string, string) {
+	dir, base, ext := filehelper.PathComponents(filePath)
+
+	base = strings.TrimSuffix(base, homophoneMarker)
+	base = strings.TrimSuffix(base, decryptedMarker)
+
+	return dir, base, ext
+}
+
 // buildFilePathWithMarker builds a file path with a marker that is separated by '_' after the base name.
 func buildFilePathWithMarker(filePath string, marker string) string {
-	dir, base, ext := filehelper.PathComponents(filePath)
-	return filepath.Join(dir, base+`_`+marker+ext)
+	dir, base, ext := cleanPathComponents(filePath)
+
+	return filepath.Join(dir, base+marker+ext)
 }

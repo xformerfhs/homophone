@@ -58,6 +58,14 @@ func ClearNumber[S ~[]T, T constraints.Number](a S) {
 	FillToCap(a, 0)
 }
 
+// RemoveNoOrder removes the element with the specified index.
+// The order of the elements is *not* preserved.
+func RemoveNoOrder[S ~[]T, T any](s S, i int) S {
+	lastIndex := len(s) - 1
+	s[i] = s[lastIndex]
+	return s[:lastIndex]
+}
+
 // ******** Private functions ********
 
 // doFill fills a slice in an optimal way.

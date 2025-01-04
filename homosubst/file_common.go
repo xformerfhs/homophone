@@ -36,8 +36,8 @@ var fileMagic = []byte(`HFDF`)
 // actVersion is the current version number.
 const actVersion byte = 0
 
-// substFileLength is the length of the data in a substitution file.
-const substFileLength = 136
+// substitutionDataLength is the length of the substitution data in a substitution file.
+const substitutionDataLength = 146
 
 // generator is the starter value for the integrity key generation.
 var generator = []byte{

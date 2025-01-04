@@ -39,7 +39,6 @@ import (
 	"homophone/integritycheckedfile"
 	"homophone/keygenerator"
 	"homophone/randomlist"
-	"unicode"
 )
 
 func NewLoad(substFileName string) (*Substitutor, error) {
@@ -53,7 +52,7 @@ func NewLoad(substFileName string) (*Substitutor, error) {
 	}
 	defer filehelper.CloseWithName(r)
 
-	if r.DataLen() != substFileLength {
+	if r.DataLen() != substitutionDataLength {
 		return nil, errors.New(`wrong file size`)
 	}
 
@@ -113,7 +112,7 @@ func loadSubstitutionData(substitutionData []byte) (uint32, []*randomlist.Random
 		return 0, nil, err
 	}
 
-	if substitutionAlphabetSize != 52 {
+	if substitutionAlphabetSize != requiredSubstitutionAlphabetSize {
 		return 0, nil, fmt.Errorf(`wrong substitution alphabet size: %d`, substitutionAlphabetSize)
 	}
 
@@ -195,9 +194,6 @@ func loadOneSubstitutionList(listSize uint32, substitutionData []byte, check map
 
 		actPos += readBytes
 		entryRune := rune(entry)
-		if !unicode.IsLetter(entryRune) {
-			return nil, 0, errors.New(`invalid substitution entry`)
-		}
 
 		if check[entryRune] {
 			return nil, 0, fmt.Errorf(`duplicate substitution entry: '%c'`, entryRune)
