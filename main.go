@@ -51,12 +51,12 @@ func main() {
 
 // realMain is the real main function with a return code.
 func realMain(args []string) int {
+	defineCommandLineFlags()
+
 	numArgs := len(args)
-	if numArgs < 2 {
+	if numArgs < 1 {
 		return printUsageError(`Not enough arguments`)
 	}
-
-	defineCommandLineFlags()
 
 	var rc int
 
