@@ -1,5 +1,5 @@
 //
-// SPDX-FileCopyrightText: Copyright 2024 Frank Schwab
+// SPDX-FileCopyrightText: Copyright 2024-2025 Frank Schwab
 //
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -24,7 +24,7 @@
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
-//    2024-01-03: V1.1.0: Add Name function.
+//    2025-01-03: V1.1.0: Add Name function.
 //
 
 package integritycheckedfile
@@ -38,7 +38,7 @@ import (
 	"os"
 )
 
-// ======== Public types ========
+// ******** Public types ********
 
 // Reader implements a read for an integrity-checked file.
 type Reader struct {
@@ -47,17 +47,17 @@ type Reader struct {
 	position int64
 }
 
-// ======== Public constants ========
+// ******** Public constants ********
 
 // ErrFileCorrupt is returned when the checksum does not match the file data.
 var ErrFileCorrupt = errors.New(`file is corrupt`)
 
-// ======== Private constants ========
+// ******** Private constants ********
 
 // readBufferSize is the buffer size used for the check of the file.
 const readBufferSize = 1_024 << 2
 
-// ======== Public creation functions ========
+// ******** Public creation functions ********
 
 // NewReader creates a new integrity-checked file reader.
 func NewReader(fileName string, hashFunc func() hash.Hash, key []byte, additionalData []byte) (*Reader, error) {
@@ -101,7 +101,7 @@ func NewReader(fileName string, hashFunc func() hash.Hash, key []byte, additiona
 	}, nil
 }
 
-// ======== Public functions ========
+// ******** Public functions ********
 
 // DataLen returns the length of the data in the file.
 func (r *Reader) DataLen() int64 {
@@ -153,7 +153,7 @@ func (r *Reader) Name() string {
 	return r.file.Name()
 }
 
-// ======== Private functions ========
+// ******** Private functions ********
 
 // checkFileIntegrity checks if the file has the correct checksum.
 func checkFileIntegrity(file *os.File, dataLength int64, hasher hash.Hash, additionalData []byte) error {

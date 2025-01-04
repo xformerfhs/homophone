@@ -83,13 +83,6 @@ func (s *Substitutor) decryptFile(
 		if err != nil {
 			return err
 		}
-
-		/*
-			_, err = writer.WriteString(oshelper.NewLine)
-			if err != nil {
-				return makeFileError(`write to`, `out`, outFileName, err)
-			}
-		*/
 	}
 
 	if scanner.Err() != nil {

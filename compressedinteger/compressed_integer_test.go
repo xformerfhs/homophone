@@ -49,7 +49,7 @@ var byteSliceValues = [][]byte{{0}, {0x3f},
 	{0x80, 0x00, 0x00}, {0xbf, 0xff, 0xff},
 	{0xc0, 0x00, 0x00, 0x00}, {0xff, 0xff, 0xff, 0xff}}
 
-// ======== Test functions ========
+// ******** Test functions ********
 
 // TestBoundariesFromInt tests all integer boundary cases
 func TestBoundariesFromInt(t *testing.T) {
@@ -177,7 +177,7 @@ func TestInvalidBytes(t *testing.T) {
 	expectByteSliceConversionError(t, []byte{0xff, 0x00, 0x00}, ErrSliceTooSmall)
 }
 
-// ======== Benchmark functions ========
+// ******** Benchmark functions ********
 
 // BenchmarkFrom1ByteInteger benchmarks conversions for integers that generate 1 byte compressed representations
 func BenchmarkFrom1ByteInteger(b *testing.B) {
@@ -243,7 +243,7 @@ func BenchmarkFrom4ByteSlice(b *testing.B) {
 	}
 }
 
-// ======== Private methods ========
+// ******** Private methods ********
 
 // expectIntegerConversionError tests if a given integer conversion return the expected error
 func expectIntegerConversionError(t *testing.T, n int, expectedError error) {

@@ -1,5 +1,5 @@
 //
-// SPDX-FileCopyrightText: Copyright 2024 Frank Schwab
+// SPDX-FileCopyrightText: Copyright 2024-2025 Frank Schwab
 //
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -24,7 +24,7 @@
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
-//    2025-01-03: V1.1.0: Use randomlist.
+//    2025-01-03: V1.1.0: Use "randomlist".
 //
 
 package homosubst
@@ -34,9 +34,9 @@ import "fmt"
 // Print prints all substitutions.
 func (s *Substitutor) Print() {
 	substitutions := s.substitutions
-	for i, l := range substitutions {
+	for i, substitution := range substitutions {
 		fmt.Printf(`   %c: `, i+'A')
-		for _, r := range l.BaseList() {
+		for _, r := range substitution.BaseList() {
 			fmt.Printf(`%c`, r)
 		}
 		fmt.Println()

@@ -1,5 +1,5 @@
 //
-// SPDX-FileCopyrightText: Copyright 2024 Frank Schwab
+// SPDX-FileCopyrightText: Copyright 2025 Frank Schwab
 //
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -23,7 +23,7 @@
 // Version: 1.0.0
 //
 // Change history:
-//    2024-12-29: V1.0.0: Created.
+//    2025-01-04: V1.0.0: Created.
 //
 
 package main
@@ -54,11 +54,15 @@ var substFileName string
 // keepOthers indicates that characters that are not in the range A-Z should be kept.
 var keepOthers bool
 
+// Flag sets.
+
 // decryptCommand is the [flag.Flagset] for decryption.
 var decryptCommand *flag.FlagSet
 
 // encryptCommand is the [flag.Flagset] for encryption.
 var encryptCommand *flag.FlagSet
+
+// Program information.
 
 // myName is the program name.
 var myName string
@@ -88,6 +92,7 @@ func defineCommandLineFlags() {
 	flag.Usage = myUsage
 }
 
+// parseDecryption parses the command line of a "decrypt" command.
 func parseDecryption() int {
 	err := decryptCommand.Parse(os.Args[2:])
 	if err != nil {
@@ -97,6 +102,7 @@ func parseDecryption() int {
 	return checkDecryptionFlags()
 }
 
+// parseEncryption parses the command line of an "encrypt" command.
 func parseEncryption() int {
 	err := encryptCommand.Parse(os.Args[2:])
 	if err != nil {
@@ -104,6 +110,51 @@ func parseEncryption() int {
 	}
 
 	return checkEncryptionFlags()
+}
+
+// checkDecryptionFlags checks the decryption flags.
+func checkDecryptionFlags() int {
+	rc := checkFlagsCommon(`encrypted`)
+	if rc != rcOK {
+		return rc
+	}
+
+	if len(outFileName) == 0 {
+		outFileName = buildDecryptOutFilePath(inFileName)
+	}
+
+	return rcOK
+}
+
+// checkEncryptionFlags checks the encryption flags.
+func checkEncryptionFlags() int {
+	rc := checkFlagsCommon(`clear text`)
+	if rc != rcOK {
+		return rc
+	}
+
+	if len(outFileName) == 0 {
+		outFileName = buildEncryptOutFilePath(inFileName)
+	}
+
+	return rcOK
+}
+
+// checkFlagsCommon does the checks common to all commands.
+func checkFlagsCommon(typeName string) int {
+	if flag.NArg() > 0 {
+		return printUsageErrorf(`Arguments without flags present: %s`, flag.Args())
+	}
+
+	if len(inFileName) == 0 {
+		return printUsageErrorf(`Name of %s file is missing`, typeName)
+	}
+
+	if len(substFileName) == 0 {
+		substFileName = buildSubstFilePath(inFileName)
+	}
+
+	return rcOK
 }
 
 // myUsage is the function that is called by flag.Usage. It prints the usage information.
@@ -142,48 +193,4 @@ The character substitution table is written to a key file which is required for 
 	_, _ = fmt.Fprintln(errWriter)
 	_, _ = fmt.Fprintln(errWriter, `help: Print this usage information`)
 	_, _ = fmt.Fprintln(errWriter)
-}
-
-// checkDecryptionFlags checks the decryption flags.
-func checkDecryptionFlags() int {
-	rc := checkCommon(`encrypted`)
-	if rc != rcOK {
-		return rc
-	}
-
-	if len(outFileName) == 0 {
-		outFileName = buildDecryptOutFilePath(inFileName)
-	}
-
-	return rcOK
-}
-
-// checkEncryptionFlags checks the encryption flags.
-func checkEncryptionFlags() int {
-	rc := checkCommon(`clear text`)
-	if rc != rcOK {
-		return rc
-	}
-
-	if len(outFileName) == 0 {
-		outFileName = buildEncryptOutFilePath(inFileName)
-	}
-
-	return rcOK
-}
-
-func checkCommon(typeName string) int {
-	if flag.NArg() > 0 {
-		return printUsageErrorf(`Arguments without flags present: %s`, flag.Args())
-	}
-
-	if len(inFileName) == 0 {
-		return printUsageErrorf(`Name of %s file is missing`, typeName)
-	}
-
-	if len(substFileName) == 0 {
-		substFileName = buildSubstFilePath(inFileName)
-	}
-
-	return rcOK
 }

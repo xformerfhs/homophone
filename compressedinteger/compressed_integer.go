@@ -32,7 +32,7 @@ import (
 	"errors"
 )
 
-// ======== Public constants ========
+// ******** Public constants ********
 
 // Minimum and maximum allowed value
 
@@ -45,7 +45,7 @@ var ErrIntIsNegative = errors.New(`integer is negative`)
 var ErrIntIsTooLarge = errors.New(`integer is too large`)
 var ErrSliceTooSmall = errors.New(`byte slice has not enough bytes for compressed integer`)
 
-// ======== Private constants ========
+// ******** Private constants ********
 
 // Constant for conversion
 
@@ -62,12 +62,12 @@ const resultSliceLength = 4
 const resultMaxIndex = resultSliceLength - 1
 const lengthBitsShiftValue = 6
 
-// ======== Private global variables ========
+// ******** Private global variables ********
 
 // result is the global result buffer (i.e. all returned byte slices point here)
 var result = make([]byte, resultSliceLength)
 
-// ======== Public functions ========
+// ******** Public functions ********
 
 // FromUInt32 converts an uint32 to a compressed representation byte slice
 func FromUInt32(i uint32) ([]byte, error) {

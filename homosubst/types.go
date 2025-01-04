@@ -1,5 +1,5 @@
 //
-// SPDX-FileCopyrightText: Copyright 2024 Frank Schwab
+// SPDX-FileCopyrightText: Copyright 2024-2025 Frank Schwab
 //
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -20,10 +20,11 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.0.0
+// Version: 1.1.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
+//    2025-01-03: V1.1.0: Remove unnecessary fields.
 //
 
 // Package homosubst contains the functions the implement a homophonic substitution.
@@ -31,7 +32,7 @@ package homosubst
 
 import "homophone/randomlist"
 
-// ======== Public types =========
+// ******** Public types ********=
 
 // Substitutor contains the data needed for a homophonic substitution cipher.
 type Substitutor struct {

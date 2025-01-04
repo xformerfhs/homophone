@@ -1,5 +1,5 @@
 //
-// SPDX-FileCopyrightText: Copyright 2024 Frank Schwab
+// SPDX-FileCopyrightText: Copyright 2025 Frank Schwab
 //
 // SPDX-License-Identifier: Apache-2.0
 //

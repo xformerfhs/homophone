@@ -1,5 +1,5 @@
 //
-// SPDX-FileCopyrightText: Copyright 2024 Frank Schwab
+// SPDX-FileCopyrightText: Copyright 2024-2025 Frank Schwab
 //
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -24,7 +24,7 @@
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
-//    2024-01-03: V1.1.0: Add Name function.
+//    2025-01-03: V1.1.0: Add Name function.
 //
 
 package integritycheckedfile
@@ -37,7 +37,7 @@ import (
 	"slices"
 )
 
-// ======== Public types ========
+// ******** Public types ********
 
 // Writer implements a writer for an integrity-checked file.
 type Writer struct {
@@ -46,7 +46,7 @@ type Writer struct {
 	additionalData []byte
 }
 
-// ======== Public creation functions ========
+// ******** Public creation functions ********
 
 // NewWriter creates a new writer for an integrity-checked file.
 func NewWriter(fileName string, hashFunc func() hash.Hash, key []byte, additionalData []byte) (*Writer, error) {
@@ -62,7 +62,7 @@ func NewWriter(fileName string, hashFunc func() hash.Hash, key []byte, additiona
 	}, nil
 }
 
-// ======== Public functions ========
+// ******** Public functions ********
 
 // Write writes the supplied data to the file.
 func (w *Writer) Write(p []byte) (n int, err error) {

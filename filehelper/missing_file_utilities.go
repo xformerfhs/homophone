@@ -20,10 +20,11 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.0.0
+// Version: 1.1.0
 //
 // Change history:
 //    2025-01-02: V1.0.0: Created.
+//    2025-01-03: V1.1.0: Added "PathComponents".
 //
 
 // Package filehelper contains file utilities missing from the Go base libraries.
