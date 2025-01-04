@@ -32,12 +32,35 @@ package filehelper
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
-// CloseFile closes a file and reports an error, if it occurs.
-func CloseFile(file *os.File) {
-	err := file.Close()
+// CloseWithName closes a NameCloser and prints an error message if closing failed.
+func CloseWithName(c NameCloser) {
+	err := c.Close()
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "error closing file '%s': %v\n", file.Name(), err)
+		printCloseOperationError(c.Name(), err)
 	}
+}
+
+// RealBaseName gets the base name of a file without the extension.
+func RealBaseName(filePath string) string {
+	return strings.TrimSuffix(filepath.Base(filePath), filepath.Ext(filePath))
+}
+
+// PathComponents returns the directory, base name and extension (with leading '.') of the supplied file path.
+func PathComponents(filePath string) (string, string, string) {
+	dir := filepath.Dir(filePath)
+	base := filepath.Base(filePath)
+	ext := filepath.Ext(filePath)
+	base = strings.TrimSuffix(base, ext)
+	return dir, base, ext
+}
+
+// ******** Private functions ********
+
+// printCloseOperationError prints an error message for a file operation.
+func printCloseOperationError(name string, err error) {
+	_, _ = fmt.Fprintf(os.Stderr, `Error closing '%s': %v`, name, err)
 }

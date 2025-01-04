@@ -1,5 +1,5 @@
 //
-// SPDX-FileCopyrightText: Copyright 2025 Frank Schwab
+// SPDX-FileCopyrightText: Copyright 2024 Frank Schwab
 //
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -23,48 +23,85 @@
 // Version: 1.0.0
 //
 // Change history:
-//    2025-01-02: V1.0.0: Created.
+//    2024-12-29: V1.0.0: Created.
 //
 
 package main
 
 import (
+	"errors"
+	"flag"
 	"fmt"
+	"io"
 	"os"
+	"runtime"
 )
 
 // ******** Private constants ********
 
 const (
-	rcOK  = 0
-	rcErr = 1
+	rcOK              = 0
+	rcParameterError  = 1
+	rcProcessingError = 2
 )
 
 // ******** Private functions ********
 
-func printErrorf(msgFormat string, args ...any) int {
-	return printError(fmt.Sprintf(msgFormat, args...))
+// printUsageError prints an error message and the usage information.
+func printUsageError(msg string) int {
+	errWriter := flag.CommandLine.Output()
+
+	_, _ = fmt.Fprintln(errWriter)
+	_, _ = fmt.Fprint(errWriter, msg)
+
+	return printUsage(errWriter)
 }
 
-func printError(msg string) int {
+// printUsageErrorf print a formatted error message and the usage information.
+func printUsageErrorf(format string, a ...any) int {
+	errWriter := flag.CommandLine.Output()
+
+	_, _ = fmt.Fprintln(errWriter)
+	_, _ = fmt.Fprintf(errWriter, format, a...)
+
+	return printUsage(errWriter)
+}
+
+// printUsage prints the usage.
+func printUsage(errWriter io.Writer) int {
+	_, _ = fmt.Fprintln(errWriter)
+	flag.Usage()
+
+	return rcParameterError
+}
+
+// printUsageOnly prints only the usage.
+func printUsageOnly() int {
+	_, _ = fmt.Fprintln(flag.CommandLine.Output())
+	flag.Usage()
+
+	return rcOK
+}
+
+// printErrorf prints a processing error message.
+func printErrorf(format string, a ...any) int {
 	_, _ = fmt.Fprintln(os.Stderr)
-	_, _ = fmt.Fprintln(os.Stderr, msg)
+	_, _ = fmt.Fprintf(os.Stderr, format, a...)
 
-	return rcErr
+	return rcProcessingError
 }
 
-func printErrorfUsage(msgFormat string, args ...any) int {
-	return printErrorUsage(fmt.Sprintf(msgFormat, args...))
+// printVersion prints the version information for this program.
+func printVersion() int {
+	fmt.Printf("\n%s V%s (%s), %s\n", myName, myVersion, runtime.Version(), myCopyright)
+	return rcOK
 }
 
-func printErrorUsage(msg string) int {
-	_, _ = fmt.Fprintln(os.Stderr)
-	_, _ = fmt.Fprintln(os.Stderr, msg)
-
-	return printUsage()
-}
-
-func printUsage() int {
-	_, _ = fmt.Fprintln(os.Stderr, "\nUsage:\n   encrypt {file} [{noOther}]\n   decrypt {file} {subst file}")
-	return rcErr
+// rcHelpOrError returns the correct return code for help or parameter error.
+func rcHelpOrError(err error) int {
+	if errors.Is(err, flag.ErrHelp) {
+		return rcOK
+	} else {
+		return rcParameterError
+	}
 }

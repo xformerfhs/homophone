@@ -31,41 +31,35 @@ package homosubst
 
 import (
 	"bufio"
-	"fmt"
 	"homophone/filehelper"
 	"homophone/oshelper"
 	"os"
-	"path"
-	"strings"
 	"unicode"
 )
 
 // ******** Public type functions ********
 
 // Encrypt encrypts the file named in the creation call with the built homophone substitution.
-func (s *Substitutor) Encrypt(noOther bool) (string, error) {
-	inFileName := s.fileName
-
-	inFile, err := os.Open(inFileName)
+func (s *Substitutor) Encrypt(clearFileName string, encryptedFileName string, keepOthers bool) error {
+	clearFile, err := os.Open(clearFileName)
 	if err != nil {
-		return ``, makeFileError(`open`, `in`, inFileName, err)
+		return makeFileError(`open`, `in`, clearFileName, err)
 	}
-	defer filehelper.CloseFile(inFile)
+	defer filehelper.CloseWithName(clearFile)
 
-	outFileName := buildOutFileName(inFileName)
-	var outFile *os.File
-	outFile, err = os.OpenFile(outFileName, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	var encryptedFile *os.File
+	encryptedFile, err = os.OpenFile(encryptedFileName, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if err != nil {
-		return ``, makeFileError(`open`, `out`, outFileName, err)
+		return makeFileError(`open`, `out`, encryptedFileName, err)
 	}
-	defer filehelper.CloseFile(outFile)
+	defer filehelper.CloseWithName(encryptedFile)
 
-	err = s.encryptFile(inFile, outFile, noOther, outFileName)
+	err = s.encryptFile(clearFile, encryptedFile, keepOthers, encryptedFileName)
 	if err != nil {
-		return ``, err
+		return err
 	}
 
-	return outFileName, nil
+	return nil
 }
 
 // ******** Private type functions ********
@@ -74,7 +68,7 @@ func (s *Substitutor) Encrypt(noOther bool) (string, error) {
 func (s *Substitutor) encryptFile(
 	inFile *os.File,
 	outFile *os.File,
-	noOther bool,
+	keepOthers bool,
 	outFileName string,
 ) error {
 	var err error
@@ -85,12 +79,12 @@ func (s *Substitutor) encryptFile(
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
 		text := scanner.Text()
-		err = s.encryptOneLine(text, writer, noOther, outFileName)
+		err = s.encryptOneLine(text, writer, keepOthers, outFileName)
 		if err != nil {
 			return err
 		}
 
-		if !noOther {
+		if keepOthers {
 			_, err = writer.WriteString(oshelper.NewLine)
 			if err != nil {
 				return makeFileError(`write to`, `out`, outFileName, err)
@@ -111,7 +105,7 @@ func (s *Substitutor) encryptFile(
 }
 
 // encryptOneLine encrypts one line.
-func (s *Substitutor) encryptOneLine(text string, writer *bufio.Writer, noOther bool, outFileName string) error {
+func (s *Substitutor) encryptOneLine(text string, writer *bufio.Writer, keepOthers bool, outFileName string) error {
 	var err error
 
 	for _, r := range text {
@@ -119,7 +113,7 @@ func (s *Substitutor) encryptOneLine(text string, writer *bufio.Writer, noOther 
 		if r >= 'A' && r <= 'Z' {
 			_, err = writer.WriteRune(s.SubstituteRune(r))
 		} else {
-			if !noOther {
+			if keepOthers {
 				_, err = writer.WriteRune(r)
 			}
 		}
@@ -129,20 +123,4 @@ func (s *Substitutor) encryptOneLine(text string, writer *bufio.Writer, noOther 
 		}
 	}
 	return nil
-}
-
-// ******** Private functions ********
-
-// buildOutFileName builds the file name of the output file.
-func buildOutFileName(fileName string) string {
-	dir := path.Dir(fileName)
-	base := path.Base(fileName)
-	ext := path.Ext(fileName)
-	base = strings.TrimSuffix(base, ext)
-	return path.Join(dir, base+"_homophone"+ext)
-}
-
-// makeFileError builds an error for a file error.
-func makeFileError(operation string, direction string, fileName string, err error) error {
-	return fmt.Errorf(`could not %s %sput file '%s': %w`, operation, direction, fileName, err)
 }

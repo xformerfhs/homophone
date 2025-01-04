@@ -29,12 +29,12 @@
 // Package homosubst contains the functions the implement a homophonic substitution.
 package homosubst
 
+import "homophone/randomlist"
+
 // ======== Public types =========
 
 // Substitutor contains the data needed for a homophonic substitution cipher.
 type Substitutor struct {
-	fileName                 string
-	substitutions            [][]rune
-	substitutionIndex        []uint16
+	substitutions            []*randomlist.RandomList[rune]
 	substitutionAlphabetSize uint16
 }

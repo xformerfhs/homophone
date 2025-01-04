@@ -31,7 +31,9 @@ package homosubst
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"homophone/filehelper"
+	"homophone/randomlist"
 	"math"
 	"math/rand"
 	"os"
@@ -49,17 +51,21 @@ const sourceAlphabetSize uint16 = 26
 
 // NewSubstitutor creates a new substitutor for the given file.
 func NewSubstitutor(sourceFileName string) (*Substitutor, error) {
-	runes := []rune(substitutionAlphabet)
-	substitutionAlphabetSize := uint16(len(runes))
+	substitutionRunes := []rune(substitutionAlphabet)
+	substitutionAlphabetSize := uint16(len(substitutionRunes))
 
 	result := &Substitutor{}
 
 	result.substitutionAlphabetSize = substitutionAlphabetSize
 
-	// 1. Get the charakter frequencies from the file.
+	// 1. Get the character frequencies from the file.
 	sourceFrequencies, totalCount, err := getFrequenciesFromFile(sourceFileName)
 	if err != nil {
 		return nil, err
+	}
+
+	if totalCount == 0 {
+		return nil, fmt.Errorf(`source file '%s' has no characters in the range A-Z`, sourceFileName)
 	}
 
 	// 2. Get the lengths of the substitutions of each character from the frequencies.
@@ -70,11 +76,7 @@ func NewSubstitutor(sourceFileName string) (*Substitutor, error) {
 	}
 
 	// 3. Build the substitution lists from the lengths.
-	result.substitutions = generateSubstitutions(substitutionLengths, runes, substitutionAlphabetSize)
-
-	result.substitutionIndex = make([]uint16, sourceAlphabetSize)
-
-	result.fileName = sourceFileName
+	result.substitutions = generateSubstitutions(substitutionLengths, substitutionRunes, substitutionAlphabetSize)
 
 	return result, nil
 }
@@ -87,7 +89,7 @@ func getFrequenciesFromFile(fileName string) ([]int, int, error) {
 	if err != nil {
 		return nil, 0, err
 	}
-	defer filehelper.CloseFile(file)
+	defer filehelper.CloseWithName(file)
 
 	frequencies := make([]int, sourceAlphabetSize)
 	totalCount := 0
@@ -155,15 +157,18 @@ func getSubstitutionLengths(sourceFrequencies []int, totalCount int, substitutio
 }
 
 // generateSubstitutions Generate the substitution characters from the lengths per character.
-func generateSubstitutions(substitutionLengths []uint16, substitutionAlphabet []rune, substitutionAlphabetSize uint16) [][]rune {
+func generateSubstitutions(
+	substitutionLengths []uint16,
+	substitutionAlphabet []rune,
+	substitutionAlphabetSize uint16) []*randomlist.RandomList[rune] {
 	used := make([]bool, substitutionAlphabetSize)
-	result := make([][]rune, sourceAlphabetSize)
-	for i, l := range substitutionLengths {
-		list := make([]rune, l)
-		for j := range l {
+	result := make([]*randomlist.RandomList[rune], sourceAlphabetSize)
+	for i, substitutionLength := range substitutionLengths {
+		list := make([]rune, substitutionLength)
+		for j := range substitutionLength {
 			list[j] = substitutionAlphabet[getSubstitutionAlphabetIndex(used, substitutionAlphabetSize)]
 		}
-		result[i] = list
+		result[i] = randomlist.New(list)
 	}
 
 	return result

@@ -20,10 +20,11 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.0.0
+// Version: 1.1.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
+//    2024-01-03: V1.1.0: Add Name function.
 //
 
 package integritycheckedfile
@@ -145,6 +146,11 @@ func (r *Reader) Close() error {
 	r.dataLen = 0
 
 	return nil
+}
+
+// Name returns the name of the underlying file.
+func (r *Reader) Name() string {
+	return r.file.Name()
 }
 
 // ======== Private functions ========

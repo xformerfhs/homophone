@@ -34,10 +34,10 @@ import (
 )
 
 // doEncryption encryptions the contents of a file.
-func doEncryption(fileName string, noOther bool) int {
-	fmt.Printf("Source file: '%s'\n", fileName)
+func doEncryption(clearFileName string, encryptedFileName string, substitutionFileName string, keepOthers bool) int {
+	fmt.Printf("Source file: '%s'\n", clearFileName)
 
-	substitutor, err := homosubst.NewSubstitutor(fileName)
+	substitutor, err := homosubst.NewSubstitutor(clearFileName)
 	if err != nil {
 		return printErrorf(`Error creating substitutor: %v`, err)
 	}
@@ -45,15 +45,13 @@ func doEncryption(fileName string, noOther bool) int {
 	fmt.Println(`Substitutions:`)
 	substitutor.Print()
 
-	var outFileName string
-	outFileName, err = substitutor.Encrypt(noOther)
+	err = substitutor.Encrypt(clearFileName, encryptedFileName, keepOthers)
 	if err != nil {
 		return printErrorf(`Error encrypting file: %v`, err)
 	}
 	fmt.Printf("Encrypted file: '%s'\n", outFileName)
 
-	var substFileName string
-	substFileName, err = substitutor.Save()
+	err = substitutor.Save(substitutionFileName)
 	if err != nil {
 		return printErrorf(`Error saving substitution file: %v`, err)
 	}
@@ -64,8 +62,8 @@ func doEncryption(fileName string, noOther bool) int {
 }
 
 // doDecryption decrypts the contents of an encrypted file.
-func doDecryption(fileName string, substitutionFileName string) int {
-	fmt.Printf("Source file: '%s'\n", fileName)
+func doDecryption(encryptedFileName string, decryptedFileName string, substitutionFileName string) int {
+	fmt.Printf("Encrypted file: '%s'\n", encryptedFileName)
 
 	substitutor, err := homosubst.NewLoad(substitutionFileName)
 	if err != nil {
@@ -76,13 +74,12 @@ func doDecryption(fileName string, substitutionFileName string) int {
 	fmt.Println(`Substitutions:`)
 	substitutor.Print()
 
-	var outFileName string
-	outFileName, err = substitutor.Decrypt(fileName)
+	err = substitutor.Decrypt(encryptedFileName, decryptedFileName)
 	if err != nil {
 		return printErrorf(`Error decrypting file: %v`, err)
 	}
 
-	fmt.Printf("Decrypted file: '%s'\n", outFileName)
+	fmt.Printf("Decrypted file: '%s'\n", decryptedFileName)
 
 	return rcOK
 }

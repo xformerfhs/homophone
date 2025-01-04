@@ -32,38 +32,35 @@ package homosubst
 import (
 	"bufio"
 	"homophone/filehelper"
-	"homophone/oshelper"
+	"homophone/randomlist"
 	"os"
-	"path"
-	"strings"
 )
 
 // ******** Public type functions ********
 
 // Decrypt decrypts given file with the loaded homophone substitution.
-func (s *Substitutor) Decrypt(inFileName string) (string, error) {
-	inFile, err := os.Open(inFileName)
+func (s *Substitutor) Decrypt(encryptedFileName string, decryptedFileName string) error {
+	encryptedFile, err := os.Open(encryptedFileName)
 	if err != nil {
-		return ``, makeFileError(`open`, `in`, inFileName, err)
+		return makeFileError(`open`, `in`, encryptedFileName, err)
 	}
-	defer filehelper.CloseFile(inFile)
+	defer filehelper.CloseWithName(encryptedFile)
 
-	outFileName := buildDecryptOutFileName(inFileName)
-	var outFile *os.File
-	outFile, err = os.OpenFile(outFileName, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	var decryptedFile *os.File
+	decryptedFile, err = os.OpenFile(decryptedFileName, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if err != nil {
-		return ``, makeFileError(`open`, `out`, outFileName, err)
+		return makeFileError(`open`, `out`, decryptedFileName, err)
 	}
-	defer filehelper.CloseFile(outFile)
+	defer filehelper.CloseWithName(decryptedFile)
 
 	decryptionMap := buildDecryptionMap(s.substitutions)
 
-	err = s.decryptFile(inFile, outFile, decryptionMap, outFileName)
+	err = s.decryptFile(encryptedFile, decryptedFile, decryptionMap, decryptedFileName)
 	if err != nil {
-		return ``, err
+		return err
 	}
 
-	return outFileName, nil
+	return nil
 }
 
 // ******** Private type functions ********
@@ -79,18 +76,20 @@ func (s *Substitutor) decryptFile(
 	reader := bufio.NewReader(inFile)
 	writer := bufio.NewWriter(outFile)
 	scanner := bufio.NewScanner(reader)
-	scanner.Split(bufio.ScanLines)
+	scanner.Split(bufio.ScanRunes)
 	for scanner.Scan() {
 		text := scanner.Text()
-		err = s.decryptOneLine(text, writer, decryptionMap, outFileName)
+		err = s.decryptOneRune(text, writer, decryptionMap, outFileName)
 		if err != nil {
 			return err
 		}
 
-		_, err = writer.WriteString(oshelper.NewLine)
-		if err != nil {
-			return makeFileError(`write to`, `out`, outFileName, err)
-		}
+		/*
+			_, err = writer.WriteString(oshelper.NewLine)
+			if err != nil {
+				return makeFileError(`write to`, `out`, outFileName, err)
+			}
+		*/
 	}
 
 	if scanner.Err() != nil {
@@ -105,7 +104,7 @@ func (s *Substitutor) decryptFile(
 	return nil
 }
 
-func (s *Substitutor) decryptOneLine(text string, writer *bufio.Writer, decryptionMap map[rune]rune, outFileName string) error {
+func (s *Substitutor) decryptOneRune(text string, writer *bufio.Writer, decryptionMap map[rune]rune, outFileName string) error {
 	var err error
 
 	for _, r := range text {
@@ -125,28 +124,14 @@ func (s *Substitutor) decryptOneLine(text string, writer *bufio.Writer, decrypti
 
 // ******** Private functions ********
 
-func buildDecryptionMap(substitutions [][]rune) map[rune]rune {
+func buildDecryptionMap(substitutions []*randomlist.RandomList[rune]) map[rune]rune {
 	result := make(map[rune]rune)
 	destinationRune := 'A'
 	for _, list := range substitutions {
-		for _, substitution := range list {
+		for _, substitution := range list.BaseList() {
 			result[substitution] = destinationRune
 		}
 		destinationRune++
 	}
 	return result
-}
-
-// buildDecryptOutFileName builds the file name of the output file.
-func buildDecryptOutFileName(fileName string) string {
-	pos := strings.LastIndex(fileName, `_homophone`)
-	if pos >= 0 {
-		return fileName[:pos] + `_decrypted` + fileName[pos+10:]
-	} else {
-		dir := path.Dir(fileName)
-		base := path.Base(fileName)
-		ext := path.Ext(fileName)
-		base = strings.TrimSuffix(base, ext)
-		return path.Join(dir, base+"_decrypted"+ext)
-	}
 }

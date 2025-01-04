@@ -20,19 +20,27 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.1.0
+// Version: 2.0.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
 //    2025-01-02: V1.1.0: Modularized.
+//    2025-01-04: V2.0.0: New interface and structure.
 //
 
 package main
 
 import (
 	"os"
-	"strings"
+	"unicode"
+	"unicode/utf8"
 )
+
+// myVersion contains the current version of this program.
+const myVersion = `2.0.0`
+
+// myCopyright contains the copyright of this program.
+const myCopyright = `Copyright (c) 2024-2025 Frank Schwab`
 
 // ******** Main function ********
 
@@ -44,22 +52,40 @@ func main() {
 // realMain is the real main function with a return code.
 func realMain(args []string) int {
 	numArgs := len(args)
-	if numArgs < 1 {
-		return printErrorUsage(`Not enough arguments`)
+	if numArgs < 2 {
+		return printUsageError(`Not enough arguments`)
 	}
 
-	cmd := strings.ToLower(args[0])
-	switch cmd[0] {
-	case 'e':
-		return doEncryption(args[1], numArgs > 1)
+	defineCommandLineFlags()
 
-	case 'd':
-		if len(args) < 3 {
-			return printErrorUsage(`Not enough arguments`)
+	var rc int
+
+	r, _ := utf8.DecodeRuneInString(args[0])
+	cmd := unicode.ToUpper(r)
+	switch cmd {
+	case 'D':
+		rc = parseDecryption()
+		if rc == rcOK {
+			return doDecryption(inFileName, outFileName, substFileName)
+		} else {
+			return rc
 		}
-		return doDecryption(args[1], args[2])
+
+	case 'E':
+		rc = parseEncryption()
+		if rc == rcOK {
+			return doEncryption(inFileName, outFileName, substFileName, keepOthers)
+		} else {
+			return rc
+		}
+
+	case 'H':
+		return printUsageOnly()
+
+	case 'V':
+		return printVersion()
 
 	default:
-		return printErrorfUsage(`Unknown command: '%s'`, cmd)
+		return printUsageErrorf(`Unknown command: '%s'`, args[0])
 	}
 }
