@@ -33,9 +33,7 @@ import (
 	"errors"
 	"math"
 	"math/rand"
-	"os"
 	"testing"
-	"time"
 )
 
 // Known conversion values
@@ -96,7 +94,7 @@ func TestRandomIntConversion(t *testing.T) {
 	var n int
 	var c []byte
 	var rn int
-	rand.Seed(time.Now().UnixNano() * int64(os.Getpid())) // Always use a new random sequence
+
 	for _, supValue := range supValues {
 		for i := 0; i < 100; i++ {
 			// Convert random integer to byte slice
@@ -126,7 +124,7 @@ func TestRandomUInt32Conversion(t *testing.T) {
 	var n uint32
 	var c []byte
 	var rn uint32
-	rand.Seed(time.Now().UnixNano() * int64(os.Getpid())) // Always use a new random sequence
+
 	for _, supValue := range supValues {
 		for i := 0; i < 100; i++ {
 			// Convert random integer to byte slice
