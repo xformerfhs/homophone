@@ -41,14 +41,14 @@ import (
 	"unicode"
 )
 
-// ******** Private constants ********=
+// ******** Private constants ********
 
 var substitutionAlphabet = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`
 
 // sourceAlphabetSize contains the size of the alphabet to map, i.e. A-Z.
 const sourceAlphabetSize uint16 = 26
 
-// ******** Public creation functions ********=
+// ******** Public creation functions ********
 
 // NewSubstitutor creates a new substitutor for the given file.
 func NewSubstitutor(sourceFileName string) (*Substitutor, error) {
@@ -82,7 +82,7 @@ func NewSubstitutor(sourceFileName string) (*Substitutor, error) {
 	return result, nil
 }
 
-// ******** Private functions ********=
+// ******** Private functions ********
 
 // getFrequenciesFromFile calculates the frequencies of each character in the file.
 func getFrequenciesFromFile(fileName string) ([]int, int, error) {

@@ -32,7 +32,7 @@ package homosubst
 
 import "homophone/randomlist"
 
-// ******** Public types ********=
+// ******** Public types ********
 
 // Substitutor contains the data needed for a homophonic substitution cipher.
 type Substitutor struct {
