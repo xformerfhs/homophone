@@ -20,10 +20,11 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.0.0
+// Version: 1.0.1
 //
 // Change history:
 //    2025-01-02: V1.0.0: Created.
+//    2025-01-05: V1.0.1: Added forgotten colon in message.
 //
 
 package main
@@ -69,7 +70,7 @@ func doDecryption(encryptedFileName string, decryptedFileName string, substituti
 	if err != nil {
 		return printErrorf(`Error loading substitution file: %v`, err)
 	}
-	fmt.Printf("Loaded substitution file '%s'\n", substitutionFileName)
+	fmt.Printf("Loaded substitution file: '%s'\n", substitutionFileName)
 
 	fmt.Println(`Substitutions:`)
 	substitutor.Print()
