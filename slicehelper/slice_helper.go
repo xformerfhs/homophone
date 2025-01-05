@@ -68,7 +68,7 @@ func RemoveNoOrder[S ~[]T, T any](s S, i int) S {
 		s[i] = s[lastIndex]
 	}
 
-	// Return a slice that is shortened by 1.
+	// Remove last element.
 	return s[:lastIndex]
 }
 
