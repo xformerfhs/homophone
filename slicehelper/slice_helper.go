@@ -62,15 +62,8 @@ func ClearNumber[S ~[]T, T constraints.Number](a S) {
 // RemoveNoOrder removes the element with the specified index.
 // The order of the elements is *not* preserved.
 func RemoveNoOrder[S ~[]T, T any](s S, i int) S {
-	lastIndex := len(s)
-
-	// Just return the slice if it contains no elements.
-	if lastIndex == 0 {
-		return s
-	}
-
 	// Copy last element into removed element.
-	lastIndex--
+	lastIndex := len(s) - 1
 	if i != lastIndex {
 		s[i] = s[lastIndex]
 	}
