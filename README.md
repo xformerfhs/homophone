@@ -17,7 +17,7 @@ A simple [substitution cipher](https://en.wikipedia.org/wiki/Substitution_cipher
 
 In order to flatten the statistical distribution of the characters one can map the frequent characters with multiple substitutions.
 For this to work the destination alphabet has to have much more characters than the source alphabet.
-I.e. the rarely occurring character `B` is replaced by `j`, but the frequently occurring `E` is replaced by multiple characters like `yWSqXCBb`.
+E.g. the rarely occurring character `B` is replaced by `j`, but the frequently occurring `E` is replaced by multiple characters like `yWSqXCBb`.
 Any of these characters would code for an `E`.
 
 To get the right number of substitution characters one has to count the frequencies of the characters in the source text and adjust the number of substitution characters so that each substitution characters for each source character has about the same probability of occurring.
