@@ -26,8 +26,8 @@ To get the right number of substitution characters one has to count the frequenc
 
 In this program all characters are mapped to upper case before encryption.
 This makes the source alphabet have 26 characters: `ABCDEFGHIJKLMNOPQRSTUVWXYZ`.
-The destination alphabet is set to `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`.
-So 26 source characters are mapped to 62 destination characters.
+The destination alphabet is set to `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`.
+So 26 source characters are mapped to 52 destination characters.
 
 On encryption the correct number of substitution characters is calculated for each of the source characters.
 Then each of the substitution characters is randomly assigned.
@@ -116,32 +116,32 @@ This prints the following output:
 ```
 Source file: 'message.txt'
 Substitutions:
-   A: ONjK
-   B: s
-   C: 4J
-   D: hn
-   E: PtLTGgVd
-   F: p5
-   G: E
-   H: 20i
-   I: wyS
-   J: 9
-   K: X
-   L: FbQ
-   M: r
-   N: MxZ
-   O: uzaB
-   P: c
-   Q: v
-   R: 68fI
-   S: U1D
-   T: 7HWle
-   U: qR
-   V: Y
-   W: Co
-   X: k
-   Y: mA
-   Z: 3
+   A: rvG
+   B: M
+   C: XP
+   D: i
+   E: mjhaVtz
+   F: C
+   G: B
+   H: QH
+   I: OkJ
+   J: S
+   K: q
+   L: bZ
+   M: p
+   N: Eu
+   O: cFUW
+   P: A
+   Q: d
+   R: Twn
+   S: yKI
+   T: LfYeD
+   U: xg
+   V: N
+   W: o
+   X: R
+   Y: s
+   Z: l
 Encrypted file: 'message_homophone.txt'
 Substitution file: 'message_txt.subst'
 ```
@@ -155,7 +155,7 @@ This is list is the key and is saved in the `key` file.
 The encrypted file looks like this:
 
 ```
-JiKIQgDToLbFPfOqe2a8BpjUR4JG1D5qQszuXNsuRWH0dVO6bA0y1laImzp72teAcdC8wlT64jrtqcCS7iNHfKSZwxEGkP8JyUV5B6mzRMEWAcLoIwlgfDmTUSMe2tVOIFA17igq1PfDBpHmcLo8yWd6UCGILXxaoZNDlAcgC6w7V81CdQFPf4KrTRcoye0W2tUGxHLM4gjDjcIKJ7SJGn6SbFuZdEzuhynPNbTOhUHBNZaeiVfQKlt8W0twnPjoO1ruhw5SdhlBILjnMaCy1H0V7wrTpzfObFEuznrgxWa4BrGeuHigNSha5W2Gy64zRx78ml2SUCBfXDaqeK1WiT6PvRw8VnDLYdZHAJ0OINJlt8U4uqMeyME7iT5ypedVZUcjJLDsGWogPxCzfh1KMnH2tpRQQD7BclzESYtO4bK1UwJjF5qQFbSxPa5HmcVwZ4yhTZlNQFmNMuW0dILYGxrB6gpjraqU7AcSxEtkLfJwDPy1e0VvRS4Xs8BoZ5zk9Rrc1uYT6WigbK3AhzEmuqrOANbIdjnmXMaoB6Cu8XGhyezRlpBIH2L5wfD7lyrT70dVkG64wUPWigvqSJXsfaoZpuk9RrcUBYt8e2dFO3AnzEyDKxgkKrcQPapjcNMEIOrK1VxHtZJG4BM7NSxwZEjbQH2LFTleP8Dz5W0LOQciKsdl
+PHvTbtKVojZZhnrgfQUwcCGyxXPmIICxbMWFqrMWgLeQazGnZsHkKDFwscCYHzDsAtoTOfhTXvpmgAoJYQvewrOuJEBaRjnPkyVCUnsWxEBLsAjoTOYtwysaKJuLHhmGnbsIeQVxKzTIFCfsAVowkDtnyozwhquUoEGKesAaoTJDmnIojZbmTXrpagAoOLQYHjytEfzuPVvIrAwvXekXhiTJZbcumBcWiOihGbaGiKYUrEFLQznZvDVwfHjkitGorypFiJCOtiYWTjviEUokIDHaLOpmCcnGbZBcFipVueWPUphfcfQzvJiWCDQmkwPFxueTsLHOKoUnqyWgYrIfHzwVdxJwjiyhNtEYsXQvnrPLaTKXcgEDkuBeQaCkCfzhEIAGPVKMmDotjuoFTiyvEieHhCgbZKYUALcBJNtrXbGyIOXGZCxbZbkuVWCDsAmOEPJijufrZZsvEUeQzwaNhupFnmCrpUgIYsAJuBzRjTPkKaOyLHtdxkXqMnWoECcRSgpAIFNVweQzbGlsicBsWxpvsvbntGisqEFoUwoUTqmiOYWgLCcTfHVCJnyDfOpaLQhjRzwXkKjYHmdxJPqMnFouCFRSgpAIUNtwDHVZrlsiWBJyrEhRvpAZacCGAruBTGpvKhEeVuXjPFuDrkEOuBGbbfQzZaLemwKWCYHtvZAQvMmL
 ```
 
 The encrypted file can be decrypted with the following call:
@@ -169,32 +169,32 @@ This prints the following output:
 Encrypted file: 'message_homophone.txt'
 Loaded substitution file 'message_txt.subst'
 Substitutions:
-   A: ONjK
-   B: s
-   C: 4J
-   D: hn
-   E: PtLTGgVd
-   F: p5
-   G: E
-   H: 20i
-   I: wyS
-   J: 9
-   K: X
-   L: FbQ
-   M: r
-   N: MxZ
-   O: uzaB
-   P: c
-   Q: v
-   R: 68fI
-   S: U1D
-   T: 7HWle
-   U: qR
-   V: Y
-   W: Co
-   X: k
-   Y: mA
-   Z: 3
+   A: rvG
+   B: M
+   C: XP
+   D: i
+   E: mjhaVtz
+   F: C
+   G: B
+   H: QH
+   I: OkJ
+   J: S
+   K: q
+   L: bZ
+   M: p
+   N: Eu
+   O: cFUW
+   P: A
+   Q: d
+   R: Twn
+   S: yKI
+   T: LfYeD
+   U: xg
+   V: N
+   W: o
+   X: R
+   Y: s
+   Z: l
 Decrypted file: 'message_decrypted.txt'
 ```
 
@@ -207,34 +207,32 @@ homophone encrypt -in message.txt -out secret.txt -key innocent.jpg -keep
 This prints the following output:
 
 ```
-Source file: 'message.txt'
-Substitutions:
-   A: W6Lm
-   B: 3
-   C: Hv
-   D: qd
-   E: TMiyzYOF
-   F: Ea
-   G: 5
-   H: 94N
-   I: JkV
-   J: j
-   K: u
-   L: t2B
-   M: c
-   N: oCX
-   O: Anhp
-   P: G
-   Q: 7
-   R: Ix8r
-   S: wbQ
-   T: gSK10
-   U: se
+   A: YCq
+   B: X
+   C: Gl
+   D: O
+   E: iwDjxBg
+   F: E
+   G: c
+   H: dh
+   I: obA
+   J: Z
+   K: R
+   L: Hy
+   M: K
+   N: et
+   O: kSrI
+   P: F
+   Q: f
+   R: JMn
+   S: LmV
+   T: PsuTN
+   U: va
    V: U
-   W: ZR
-   X: l
-   Y: fP
-   Z: D
+   W: p
+   X: z
+   Y: W
+   Z: Q
 Encrypted file: 'secret.txt'
 Substitution file: 'innocent.jpg'
 ```
@@ -245,22 +243,22 @@ The program randomly assigns substitutions for each encryption call.
 The encrypted file `secret.txt` looks like this:
 
 ```
-v9W82yw F ZMtBYx, ms14hr na L beHHzQbEeB 3Apu 63ps0 KNi T6I2P NkQSnIf AE g9O SfGYRxV1zr, vWci sG RJg4 m K8LVXkC5 ylOIvJwF ahr PAeo5 0PGTZ8JSMxQ. (fYw, ko g4y i68tP 1900b, K9O ebzxQ hE 0fGFRrV1TIw ZMxM uCnZX mQ 1fGTRIJKzrw. RYt2O8 HLci sG ZVSN gNy bFX0Tovi Wb L GI6HSkHY q8VB2).
+lhYMHBm j piyHxJ, qvNdSn IE C VaGlDLLEvy XrkR YXSaT sdw gCnyW hbmuIJW rE Phi PWFxpMosjn, GqKB vF pANd C uMqAtoec DzgJGbVw EkM Wraec TWFDpJANBnm. (WwV, ot udi gYJHW 1900L, Phx aVjnL SE sWFjpMbTgJm pwMi ReIpt YV sWFDpnbuBJm. pxHyxM lCKB vF pAPh Tdi LjeNwtGD qV q FnCluolg OnbyH).
 
-pCF 5pnd kdMm tOWqw gA mXh04zr
+ktj crIO oOiY yxYOL PS qekshDJ
 
-B6Kyx, 19i JqML ZWQ cAdkaJFq Sp IOmd:
+HCNwM, Tdg AOBY pqm KIOoEbDO Nr JjCO:
 
-CnR Vw 09Y gVcy Eh8 LBt 5Anq cTo 1h vpcz Kn g4y 6kd ha SNFJx vpsCKrP.
+tSp AL PhB uAKx Ekn YHy crIO Kge TS GkKi sk Pdw qoO rE ThDbM lSatNnW.
 
-19JQ RAxub he0 WQ 0NM IT7sV8Oq wYUioSP H4Lr6HKzIb (vAeX1kX5 g9M EkagiFC wGmvOQ 3YKZzTo Zp8db WXq SNy as22 Q1nG 0p 5VUz m HtWwbJH6B Eet2 BJoF na SfGO.
+sdAm pIJRV Ivu CL Nhg MwfvbMxO mBUjeuW GdCnqlsiJV (GSaeTotc PdB EAENgit mFYlDV XwPpjxe prJOL CeO shB EaHy LukF Tr cbUi Y GyqVmolqH EvyH HAtj IE uWFg.
 
-VCvkdTC1L2tf, WXAK4Yx iUMo chry E6chsb gPGkX5 YlzrvJQT Vw
+beGoOxtPYyyW, CeksdDn wUxt KSMD EYKram TWFbec jzBMGoVw AL
 
-04i 7ekHu 3xnRC aAl jscGw pUy8 gNF BmDf qA5
+Nhg fvolR XnSpt Ekz ZvKFm IUiJ Pdi HCQW OIc
 
-Ppe cLP WBIO6df uohZ, nI RhruMd JS ns0 Ep8 19F aVxQK gVcM.
-KNO ylz8Hkbi "S4T 7eJvu 3rARX Ehl jecGb pUYx 19Y tmDf qA5" Jw LC Fl6cG2y na W Gmo5ILc, m QiC0MoHO vnXKLkXVC5 WBt 09T 2zg1y8Q pE S4i 62GNm3zg.
+Wka KqW YyJgqOW Rtrp, SM pInRDO bN rau ESM shj EAJLT NAKB.
+Pdw xzxnloVB "ThD fvbGR XMkpe Ekz ZvKFL SUjn uhi HCQW OIc" Am Yt wzCKFyg rE q FCecJYK, q Vgesitlx GrtsCbeoec qHy udD HBTNwML IE Phj YHFdqXDu.
 ```
 
 Because of the `keep` option all blanks, paragraphs, brackets and punctuations marks are preserved.
@@ -279,32 +277,32 @@ This produces the following output:
 Encrypted file: 'secret.txt'
 Loaded substitution file 'innocent.jpg'
 Substitutions:
-   A: W6Lm
-   B: 3
-   C: Hv
-   D: qd
-   E: TMiyzYOF
-   F: Ea
-   G: 5
-   H: 94N
-   I: JkV
-   J: j
-   K: u
-   L: t2B
-   M: c
-   N: oCX
-   O: Anhp
-   P: G
-   Q: 7
-   R: Ix8r
-   S: wbQ
-   T: gSK10
-   U: se
+   A: YCq
+   B: X
+   C: Gl
+   D: O
+   E: iwDjxBg
+   F: E
+   G: c
+   H: dh
+   I: obA
+   J: Z
+   K: R
+   L: Hy
+   M: K
+   N: et
+   O: kSrI
+   P: F
+   Q: f
+   R: JMn
+   S: LmV
+   T: PsuTN
+   U: va
    V: U
-   W: ZR
-   X: l
-   Y: fP
-   Z: D
+   W: p
+   X: z
+   Y: W
+   Z: Q
 Decrypted file: 'clear.txt'
 ```
 
