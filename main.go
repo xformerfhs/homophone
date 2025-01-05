@@ -38,7 +38,7 @@ import (
 )
 
 // myVersion contains the current version of this program.
-const myVersion = `2.0.0`
+const myVersion = `2.1.0`
 
 // myCopyright contains the copyright of this program.
 const myCopyright = `Copyright (c) 2024-2025 Frank Schwab`
