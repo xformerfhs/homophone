@@ -20,10 +20,11 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.0.0
+// Version: 1.1.0
 //
 // Change history:
 //    2025-01-04: V1.0.0: Created.
+//    2025-01-05: V1.1.0: Correct handling of additional arguments that are not flags.
 //
 
 package main
@@ -114,7 +115,7 @@ func parseEncryption() int {
 
 // checkDecryptionFlags checks the decryption flags.
 func checkDecryptionFlags() int {
-	rc := checkFlagsCommon(`encrypted`)
+	rc := checkFlagsCommon(`encrypted`, decryptCommand.Args())
 	if rc != rcOK {
 		return rc
 	}
@@ -128,7 +129,7 @@ func checkDecryptionFlags() int {
 
 // checkEncryptionFlags checks the encryption flags.
 func checkEncryptionFlags() int {
-	rc := checkFlagsCommon(`clear text`)
+	rc := checkFlagsCommon(`clear text`, encryptCommand.Args())
 	if rc != rcOK {
 		return rc
 	}
@@ -141,9 +142,9 @@ func checkEncryptionFlags() int {
 }
 
 // checkFlagsCommon does the checks common to all commands.
-func checkFlagsCommon(typeName string) int {
-	if flag.NArg() > 0 {
-		return printUsageErrorf(`Arguments without flags present: %s`, flag.Args())
+func checkFlagsCommon(typeName string, additionalArgs []string) int {
+	if len(additionalArgs) > 0 {
+		return printUsageErrorf(`Arguments without flags present: %s`, additionalArgs)
 	}
 
 	if len(inFileName) == 0 {
