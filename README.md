@@ -332,7 +332,7 @@ These scripts expect the UPX program to be in a specific location.
 This location can be adapted to the local path.
 If UPX is not available, no compression is performed.
 
-As a result, the files `hashvalue` for Linux and `hashvalue.exe` for Windows are created.
+As a result, the files `homophone` for Linux and `homophone.exe` for Windows are created.
 
 ## Contact
 
