@@ -20,10 +20,11 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.0.0
+// Version: 1.0.1
 //
 // Change history:
 //    2024-12-29: V1.0.0: Created.
+//    2025-01-05: V1.0.1: New line after processing error.
 //
 
 package main
@@ -87,6 +88,7 @@ func printUsageOnly() int {
 func printErrorf(format string, a ...any) int {
 	_, _ = fmt.Fprintln(os.Stderr)
 	_, _ = fmt.Fprintf(os.Stderr, format, a...)
+	_, _ = fmt.Fprintln(os.Stderr)
 
 	return rcProcessingError
 }

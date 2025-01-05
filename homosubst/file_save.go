@@ -20,11 +20,12 @@
 //
 // Author: Frank Schwab
 //
-// Version: 2.0.0
+// Version: 2.0.1
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
 //    2025-01-04: V2.0.0: Restructured.
+//    2025-01-05: V2.0.1: Use interface, instead of type.
 //
 
 package homosubst
@@ -36,6 +37,7 @@ import (
 	"homophone/integritycheckedfile"
 	"homophone/keygenerator"
 	"homophone/randomlist"
+	"io"
 )
 
 func (s *Substitutor) Save(filePath string) error {
@@ -79,7 +81,7 @@ func (s *Substitutor) Save(filePath string) error {
 }
 
 // saveSubstitutions saves the substitution lists.
-func saveSubstitutions(w *integritycheckedfile.Writer, substitutions []*randomlist.RandomList[rune], size []byte) error {
+func saveSubstitutions(w io.Writer, substitutions []*randomlist.RandomList[rune], size []byte) error {
 	var err error
 
 	// Save all substitution lists.

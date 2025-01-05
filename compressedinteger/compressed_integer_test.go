@@ -1,5 +1,5 @@
 //
-// SPDX-FileCopyrightText: Copyright 2023 Frank Schwab
+// SPDX-FileCopyrightText: Copyright 2023-2025 Frank Schwab
 //
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -20,10 +20,11 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.0.0
+// Version: 1.1.0
 //
 // Change history:
 //    2023-01-21: V1.0.0: Created.
+//    2025-01-05: V1.1.0: use math/rand/v2.
 //
 
 package compressedinteger
@@ -32,16 +33,18 @@ import (
 	"bytes"
 	"errors"
 	"math"
-	"math/rand"
+	"math/rand/v2"
 	"testing"
 )
 
 // Known conversion values
 // Each integer value corresponds to the byte slice value with the same index
+
 var intValues = []int{0, 0x3f,
 	0x40, 0x403f,
 	0x4040, 0x40403f,
 	0x404040, 0x4040403f}
+
 var byteSliceValues = [][]byte{{0}, {0x3f},
 	{0x40, 0x00}, {0x7f, 0xff},
 	{0x80, 0x00, 0x00}, {0xbf, 0xff, 0xff},
@@ -49,7 +52,7 @@ var byteSliceValues = [][]byte{{0}, {0x3f},
 
 // ******** Test functions ********
 
-// TestBoundariesFromInt tests all integer boundary cases
+// TestBoundariesFromInt tests all integer boundary cases.
 func TestBoundariesFromInt(t *testing.T) {
 	var err error
 	var i int
@@ -68,7 +71,7 @@ func TestBoundariesFromInt(t *testing.T) {
 	}
 }
 
-// TestBoundariesFromBytes tests all byte slice boundary cases
+// TestBoundariesFromBytes tests all byte slice boundary cases.
 func TestBoundariesFromBytes(t *testing.T) {
 	var err error
 	var i int
@@ -87,7 +90,7 @@ func TestBoundariesFromBytes(t *testing.T) {
 	}
 }
 
-// TestRandomConversion tests random integer conversions in all byte slice ranges
+// TestRandomConversion tests random integer conversions in all byte slice ranges.
 func TestRandomIntConversion(t *testing.T) {
 	supValues := []int32{0x40, 0x4040, 0x404040, 0x40404040}
 	var err error
@@ -98,7 +101,7 @@ func TestRandomIntConversion(t *testing.T) {
 	for _, supValue := range supValues {
 		for i := 0; i < 100; i++ {
 			// Convert random integer to byte slice
-			n = int(rand.Int31n(supValue))
+			n = int(rand.Int32N(supValue))
 			c, err = FromInt(n)
 			if err != nil {
 				t.Fatalf("error converting integer %d: %v", n, err)
@@ -118,6 +121,7 @@ func TestRandomIntConversion(t *testing.T) {
 	}
 }
 
+// TestRandomUInt32Conversion tests random uint32 conversions in all byte slice ranges.
 func TestRandomUInt32Conversion(t *testing.T) {
 	supValues := []int32{0x40, 0x4040, 0x404040, 0x40404040}
 	var err error
@@ -128,7 +132,7 @@ func TestRandomUInt32Conversion(t *testing.T) {
 	for _, supValue := range supValues {
 		for i := 0; i < 100; i++ {
 			// Convert random integer to byte slice
-			n = uint32(rand.Int31n(supValue))
+			n = uint32(rand.Int32N(supValue))
 			c, err = FromUInt32(n)
 			if err != nil {
 				t.Fatalf("error converting integer %d: %v", n, err)

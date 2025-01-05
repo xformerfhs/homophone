@@ -20,11 +20,12 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.1.0
+// Version: 1.1.1
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
 //    2025-01-03: V1.1.0: Use "randomlist".
+//    2025-01-03: V1.1.1: Refactor "getSubstitutionLengths". Fix randomAdjustment.
 //
 
 package homosubst
@@ -130,14 +131,7 @@ func getSubstitutionLengths(sourceFrequencies []int, totalCount int, substitutio
 	// matches the number of characters in the substitution alphabet.
 	for {
 		// 1. Calculate the substitution lengths from the frequencies.
-		resultCount := uint16(0)
-		for i, f := range sourceFrequencies {
-			if f != 0 {
-				count := hillHuntingtonRound(f, countPerSource)
-				result[i] = count
-				resultCount += count
-			}
-		}
+		resultCount := calculateSubstitutionLengths(sourceFrequencies, countPerSource, result)
 
 		// 2. If the number is not correct, make a bisection.
 		if resultCount > substitutionAlphabetSize {
@@ -151,18 +145,36 @@ func getSubstitutionLengths(sourceFrequencies []int, totalCount int, substitutio
 			}
 		}
 
-		// 3. Halve the step size and bail out if there were too many tries.
+		// 3. Halve the step size.
 		stepSize *= 0.5
 		if stepSize < stepThreshold {
+			// There is no converging solution, but we are near.
+			// Make random adjustments to match [substitutionAlphabetSize].
 			if randomAdjustment(result, substitutionAlphabetSize, resultCount) == 0 {
 				break
 			} else {
+				// Bail out, if it is still not possible to match [substitutionAlphabetSize].
 				return nil, errors.New(`unable to find a distribution`)
 			}
 		}
 	}
 
 	return result, nil
+}
+
+// calculateSubstitutionLengths calculates the substitution lengths with the current [countPerSource]
+func calculateSubstitutionLengths(sourceFrequencies []int, countPerSource float64, substitutionLengths []uint16) uint16 {
+	substitutionCount := uint16(0)
+	for i, f := range sourceFrequencies {
+		// Only calculate a substitution length if the value occurs, at all.
+		if f != 0 {
+			substitutionLength := hillHuntingtonRound(f, countPerSource)
+			substitutionLengths[i] = substitutionLength
+			substitutionCount += substitutionLength
+		}
+	}
+
+	return substitutionCount
 }
 
 // generateSubstitutions Generate the substitution characters from the lengths per character.
@@ -209,11 +221,11 @@ func hillHuntingtonRound(count int, countPerSource float64) uint16 {
 	}
 }
 
-// randomAdjustment makes random adjustments to the count until the count matches the wanted count.
+// randomAdjustment makes random adjustments to the substitution lengths until the total count matches the wanted count.
 func randomAdjustment(substitutionCount []uint16, wantedCount uint16, currentCount uint16) int16 {
 	diffCount := int16(currentCount) - int16(wantedCount)
-	eligibleIndices := make([]int, 0)
 	substitutionLength := len(substitutionCount)
+	eligibleIndices := make([]int, 0)
 	for i := 0; i < substitutionLength; i++ {
 		if substitutionCount[i] > 1 {
 			eligibleIndices = append(eligibleIndices, i)
@@ -227,12 +239,13 @@ func randomAdjustment(substitutionCount []uint16, wantedCount uint16, currentCou
 		c := substitutionCount[si]
 		if diffCount > 0 {
 			c--
+			diffCount--
 		} else {
 			c++
+			diffCount++
 		}
 
 		substitutionCount[si] = c
-		diffCount--
 
 		if diffCount != 0 {
 			eligibleIndices = slicehelper.RemoveNoOrder(eligibleIndices, i)

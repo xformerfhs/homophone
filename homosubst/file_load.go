@@ -20,11 +20,12 @@
 //
 // Author: Frank Schwab
 //
-// Version: 2.0.0
+// Version: 2.0.1
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
 //    2025-01-04: V2.0.0: Restructured.
+//    2025-01-05: V2.0.1: Read substitution data in Go style.
 //
 
 package homosubst
@@ -117,7 +118,7 @@ func loadSubstitutionData(substitutionData []byte) (uint32, []*randomlist.Random
 	}
 
 	var substitutions []*randomlist.RandomList[rune]
-	substitutions, err = loadSubstitutionLists(substitutionData, readBytes, substitutionAlphabetSize)
+	substitutions, err = loadSubstitutionLists(substitutionData[readBytes:], substitutionAlphabetSize)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -126,7 +127,7 @@ func loadSubstitutionData(substitutionData []byte) (uint32, []*randomlist.Random
 }
 
 // loadSubstitutionLists loads all substitution lists from the substitution data.
-func loadSubstitutionLists(substitutionData []byte, actPos int, substitutionAlphabetSize uint32) ([]*randomlist.RandomList[rune], error) {
+func loadSubstitutionLists(substitutionData []byte, substitutionAlphabetSize uint32) ([]*randomlist.RandomList[rune], error) {
 	var err error
 	var readBytes int
 
@@ -135,15 +136,15 @@ func loadSubstitutionLists(substitutionData []byte, actPos int, substitutionAlph
 	check := make(map[rune]bool)
 	listCount := 0
 	substitutionCount := 0
-	for actPos < len(substitutionData) {
+	for len(substitutionData) != 0 {
 		// Get size of substitution list.
 		var listSize uint32
-		listSize, readBytes, err = compressedinteger.ToUInt32(substitutionData[actPos:])
+		listSize, readBytes, err = compressedinteger.ToUInt32(substitutionData)
 		if err != nil {
 			return nil, err
 		}
 
-		actPos += readBytes
+		substitutionData = substitutionData[readBytes:]
 		listCount++
 		substitutionCount += int(listSize)
 
@@ -157,7 +158,7 @@ func loadSubstitutionLists(substitutionData []byte, actPos int, substitutionAlph
 
 		// Get the substitution list.
 		var list []rune
-		list, actPos, err = loadOneSubstitutionList(listSize, substitutionData, check, actPos)
+		list, substitutionData, err = loadOneSubstitutionList(listSize, substitutionData, check)
 		if err != nil {
 			return nil, err
 		}
@@ -179,7 +180,7 @@ func loadSubstitutionLists(substitutionData []byte, actPos int, substitutionAlph
 }
 
 // loadOneSubstitutionList loads one substitution list from the substitution data.
-func loadOneSubstitutionList(listSize uint32, substitutionData []byte, check map[rune]bool, actPos int) ([]rune, int, error) {
+func loadOneSubstitutionList(listSize uint32, substitutionData []byte, check map[rune]bool) ([]rune, []byte, error) {
 	var err error
 
 	list := make([]rune, listSize)
@@ -187,21 +188,21 @@ func loadOneSubstitutionList(listSize uint32, substitutionData []byte, check map
 	var readBytes int
 	var entry uint32
 	for i := range listSize {
-		entry, readBytes, err = compressedinteger.ToUInt32(substitutionData[actPos:])
+		entry, readBytes, err = compressedinteger.ToUInt32(substitutionData)
 		if err != nil {
-			return nil, 0, err
+			return nil, nil, err
 		}
 
-		actPos += readBytes
+		substitutionData = substitutionData[readBytes:]
 		entryRune := rune(entry)
 
 		if check[entryRune] {
-			return nil, 0, fmt.Errorf(`duplicate substitution entry: '%c'`, entryRune)
+			return nil, nil, fmt.Errorf(`duplicate substitution entry: '%c'`, entryRune)
 		}
 
 		list[i] = entryRune
 		check[entryRune] = true
 	}
 
-	return list, actPos, nil
+	return list, substitutionData, nil
 }
