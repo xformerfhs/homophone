@@ -71,10 +71,9 @@ func RemoveNoOrder[S ~[]T, T any](s S, i int) S {
 
 	// Copy last element into removed element.
 	lastIndex--
-
-	// If i == lastIndex this makes an unnecessary data move, but that is more
-	// efficient than having an "if" to prevent this.
-	s[i] = s[lastIndex]
+	if i != lastIndex {
+		s[i] = s[lastIndex]
+	}
 
 	// Return a slice that is shortened by 1.
 	return s[:lastIndex]
