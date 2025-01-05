@@ -55,8 +55,8 @@ func FillToCap[S ~[]T, T any](s S, v T) {
 }
 
 // ClearNumber clears a number type slice.
-func ClearNumber[S ~[]T, T constraints.Number](a S) {
-	FillToCap(a, 0)
+func ClearNumber[S ~[]T, T constraints.Number](s S) {
+	FillToCap(s, 0)
 }
 
 // RemoveNoOrder removes the element with the specified index.
