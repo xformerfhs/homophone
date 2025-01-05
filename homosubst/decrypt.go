@@ -85,8 +85,9 @@ func (s *Substitutor) decryptFile(
 		}
 	}
 
-	if scanner.Err() != nil {
-		return scanner.Err()
+	scanErr := scanner.Err()
+	if scanErr != nil {
+		return scanErr
 	}
 
 	err = writer.Flush()

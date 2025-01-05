@@ -117,8 +117,9 @@ func getFrequenciesFromFile(fileName string) ([]int, int, error) {
 		}
 	}
 
-	if scanner.Err() != nil {
-		return nil, 0, scanner.Err()
+	scanErr := scanner.Err()
+	if scanErr != nil {
+		return nil, 0, scanErr
 	}
 
 	return frequencies, totalCount, nil

@@ -92,8 +92,9 @@ func (s *Substitutor) encryptFile(
 		}
 	}
 
-	if scanner.Err() != nil {
-		return scanner.Err()
+	scanErr := scanner.Err()
+	if scanErr != nil {
+		return scanErr
 	}
 
 	err = writer.Flush()
