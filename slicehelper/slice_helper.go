@@ -20,7 +20,7 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.4.0
+// Version: 1.5.0
 //
 // Change history:
 //    2024-02-01: V1.0.0: Created.
@@ -28,6 +28,7 @@
 //    2024-04-26: V1.2.0: Add SimpleFill.
 //    2024-06-03: V1.3.0: Add CutTail.
 //    2024-08-09: V1.4.0: Rename CutTail to SplitTail.
+//    2025-01-05: V1.5.0: Add RemoveNoOrder, remove SimpleFill and SplitTail.
 //
 
 // Package slicehelper implements helper functions for slices.
@@ -61,8 +62,21 @@ func ClearNumber[S ~[]T, T constraints.Number](a S) {
 // RemoveNoOrder removes the element with the specified index.
 // The order of the elements is *not* preserved.
 func RemoveNoOrder[S ~[]T, T any](s S, i int) S {
-	lastIndex := len(s) - 1
+	lastIndex := len(s)
+
+	// Just return the slice if it contains no elements.
+	if lastIndex == 0 {
+		return s
+	}
+
+	// Copy last element into removed element.
+	lastIndex--
+
+	// If i == lastIndex this makes an unnecessary data move, but that is more
+	// efficient than having an "if" to prevent this.
 	s[i] = s[lastIndex]
+
+	// Return a slice that is shortened by 1.
 	return s[:lastIndex]
 }
 
