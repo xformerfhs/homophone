@@ -20,10 +20,11 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.0.0
+// Version: 1.1.0
 //
 // Change history:
 //    2025-01-03: V1.0.0: Created.
+//    2025-01-05: V1.1.0: Correct substitution data length.
 //
 
 package homosubst
@@ -37,7 +38,7 @@ var fileMagic = []byte(`HFDF`)
 const actVersion byte = 0
 
 // substitutionDataLength is the length of the substitution data in a substitution file.
-const substitutionDataLength = 146
+const substitutionDataLength = 136
 
 // generator is the starter value for the integrity key generation.
 var generator = []byte{

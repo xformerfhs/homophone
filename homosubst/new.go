@@ -20,12 +20,13 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.1.1
+// Version: 1.2.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
 //    2025-01-03: V1.1.0: Use "randomlist".
 //    2025-01-03: V1.1.1: Refactor "getSubstitutionLengths". Fix randomAdjustment.
+//    2025-01-05: V1.2.0: Correct substitution alphabet.
 //
 
 package homosubst
@@ -45,7 +46,11 @@ import (
 
 // ******** Private constants ********
 
-var substitutionAlphabet = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`
+// substitutionAlphabet is the substitution alphabet.
+// There must be no other characters than letters.
+var substitutionAlphabet = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`
+
+// requiredSubstitutionAlphabetSize is the expected substitution alphabet size for substitution files.
 var requiredSubstitutionAlphabetSize = uint32(len(substitutionAlphabet))
 
 // sourceAlphabetSize contains the size of the alphabet to map, i.e. A-Z.

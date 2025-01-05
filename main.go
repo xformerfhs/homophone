@@ -20,13 +20,14 @@
 //
 // Author: Frank Schwab
 //
-// Version: 2.1.0
+// Version: 2.2.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
 //    2025-01-02: V1.1.0: Modularized.
 //    2025-01-04: V2.0.0: New interface and structure.
 //    2025-01-05: V2.1.0: Fix substitution distribution. Some small refactoring.
+//    2025-01-05: V2.2.0: Fix substitution alphabet.
 //
 
 package main
@@ -38,7 +39,7 @@ import (
 )
 
 // myVersion contains the current version of this program.
-const myVersion = `2.1.0`
+const myVersion = `2.2.0`
 
 // myCopyright contains the copyright of this program.
 const myCopyright = `Copyright (c) 2024-2025 Frank Schwab`
