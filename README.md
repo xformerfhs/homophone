@@ -251,7 +251,7 @@ HCNwM, Tdg AOBY pqm KIOoEbDO Nr JjCO:
 
 tSp AL PhB uAKx Ekn YHy crIO Kge TS GkKi sk Pdw qoO rE ThDbM lSatNnW.
 
-sdAm pIJRV Ivu CL Nhg MwfvbMxO mBUjeuW GdCnqlsiJV (GSaeTotc PdB EAENgit mFYlDV XwPpjxe prJOL CeO shB EaHy LukF Tr cbUi Y GyqVmolqH EvyH HAtj IE uWFg.
+sdAm pIJRV Ivu CL Nhg MwfvbMxO mBUjeuW GdCnqlsiJV (GSaeTotc PdB EAENgit mFYlDV XwPpjxe prJOL CeO shB EaHy LukF Tr cbUi Y GyqVmolqH EvyH HAtj IE uWFg).
 
 beGoOxtPYyyW, CeksdDn wUxt KSMD EYKram TWFbec jzBMGoVw AL
 
@@ -261,7 +261,7 @@ Wka KqW YyJgqOW Rtrp, SM pInRDO bN rau ESM shj EAJLT NAKB.
 Pdw xzxnloVB "ThD fvbGR XMkpe Ekz ZvKFL SUjn uhi HCQW OIc" Am Yt wzCKFyg rE q FCecJYK, q Vgesitlx GrtsCbeoec qHy udD HBTNwML IE Phj YHFdqXDu.
 ```
 
-Because of the `keep` option all blanks, paragraphs, brackets and punctuations marks are preserved.
+Because of the `keep` option all blanks, quotes, brackets, digits, punctuations marks and paragraphs are preserved.
 
 Because of the preservation of the text structure and word boundaries, this text is much easier to analyse and decrypt without the key, than the text without the kept structure.
 
