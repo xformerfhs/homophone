@@ -220,7 +220,7 @@ func checkHeader(filePath string) error {
 		return err
 	}
 	if !bytes.Equal(buffer, fileMagic) {
-		return errors.New(`unknown file type`)
+		return errors.New(`invalid file type`)
 	}
 
 	// Check version number.
