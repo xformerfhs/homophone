@@ -15,12 +15,53 @@ In natural languages certain characters are much more common than others.
 In indoeuropean languages the letter `e` is much more prevalent than other characters.
 A simple [substitution cipher](https://en.wikipedia.org/wiki/Substitution_cipher) preserves the character frequencies, so the substitution character for `e` would stand out.
 
+For the English language the character distribution looks like this:
+
+```mermaid
+---
+config:
+    themeVariables:
+        fontFamily: "Courier New, Courier, monospace"
+        xyChart:
+            plotColorPalette: "#FFC000"
+---
+xychart-beta
+    title "Character frequencies"
+    x-axis [E, T, A, O, I, N, S, H, R, D, L, C, U, M, W, F, G, Y, P, B, V, K, J, X, Q, Z]
+    y-axis "Frequency in percent" 0 --> 13
+    bar [12.7, 9.1, 8.2, 7.5, 7.0, 6.7, 6.3, 6.1, 6.0, 4.3, 4.0, 2.8, 2.8, 2.4, 2.4, 2.2, 2.0, 2.0, 1.9, 1.5, 1.0, 0.8, 0.2, 0.2, 0.1, 0.1]
+```
+
+One can see that the `E` stands out quite a bit.
+Also `T` and `A` can be easily recognized in a text by their frequency.
+
 In order to flatten the statistical distribution of the characters one can map the frequent characters with multiple substitutions.
 For this to work the destination alphabet has to have much more characters than the source alphabet.
 E.g. the rarely occurring character `B` is replaced by `j`, but the frequently occurring `E` is replaced by multiple characters like `yWSqXCBb`.
 Any of these characters would code for an `E`.
 
 To get the right number of substitution characters one has to count the frequencies of the characters in the source text and adjust the number of substitution characters so that each substitution characters for each source character has about the same probability of occurring.
+
+After a homophonic encryption a typical character distribution looks like this:
+
+```mermaid
+---
+config:
+    themeVariables:
+        fontFamily: "Courier New, Courier, monospace"
+        xyChart:
+            plotColorPalette: "#FFC000"
+---
+xychart-beta
+    title "Character frequencies"
+    x-axis [A, q, e, w, E, M, s, B, b, D, f, J, m, N, O, p, U, v, x, z, h, i, j, u, c, g, I, L, y, k, n, o, C, d, G, Q, V, W, F, R, S, T, Z, K, a, l, r, t, H, X, P, Y]
+    y-axis "Frequency in percent" 0 --> 13
+    bar [2.906, 2.593, 2.503, 2.459, 2.325, 2.325, 2.325, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.146, 2.146, 2.146, 2.146, 2.101, 2.101, 2.101, 2.101, 2.101, 2.056, 2.012, 2.012, 1.967, 1.967, 1.967, 1.967, 1.967, 1.967, 1.922, 1.922, 1.878, 1.878, 1.878, 1.833, 1.609, 1.207, 0.939, 0.939, 0.626, 0.268, 0.179, 0.045]
+```
+
+It is easy to see that there are no longer characters standing out, which makes it harder to break the encryption.
+However, homophonic encryption can be broken.
+It is just harder, if done right.
 
 ## Implementation
 
