@@ -66,7 +66,7 @@ func doEncryption(clearFileName string, encryptedFileName string, substitutionFi
 func doDecryption(encryptedFileName string, decryptedFileName string, substitutionFileName string) int {
 	fmt.Printf("Encrypted file: '%s'\n", encryptedFileName)
 
-	substitutor, err := homosubst.NewLoad(substitutionFileName)
+	substitutor, err := homosubst.NewFromFile(substitutionFileName)
 	if err != nil {
 		return printErrorf(`Error loading substitution file: %v`, err)
 	}

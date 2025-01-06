@@ -20,7 +20,7 @@
 //
 // Author: Frank Schwab
 //
-// Version: 2.1.1
+// Version: 3.0.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
@@ -28,6 +28,7 @@
 //    2025-01-05: V2.0.1: Read substitution data in Go style.
 //    2025-01-06: V2.1.0: Check file header before checking file integrity.
 //    2025-01-06: V2.1.1: Do not calculate header length twice.
+//    2025-01-06: V3.0.0: Rename creation function to "NewFromFile".
 //
 
 package homosubst
@@ -46,8 +47,8 @@ import (
 	"os"
 )
 
-// NewLoad creates a new [Substitutor] from a substitution file.
-func NewLoad(substFileName string) (*Substitutor, error) {
+// NewFromFile creates a new [Substitutor] from a substitution file.
+func NewFromFile(substFileName string) (*Substitutor, error) {
 	var err error
 
 	var headerLen int64
