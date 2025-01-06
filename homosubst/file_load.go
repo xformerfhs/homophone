@@ -20,13 +20,14 @@
 //
 // Author: Frank Schwab
 //
-// Version: 2.1.0
+// Version: 2.1.1
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
 //    2025-01-04: V2.0.0: Restructured.
 //    2025-01-05: V2.0.1: Read substitution data in Go style.
 //    2025-01-06: V2.1.0: Check file header before checking file integrity.
+//    2025-01-06: V2.1.1: Do not calculate header length twice.
 //
 
 package homosubst
@@ -49,7 +50,8 @@ import (
 func NewLoad(substFileName string) (*Substitutor, error) {
 	var err error
 
-	err = checkHeader(substFileName)
+	var headerLen int64
+	headerLen, err = checkHeader(substFileName)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +73,6 @@ func NewLoad(substFileName string) (*Substitutor, error) {
 	}
 
 	// Skip the header that has been checked at the start of this function.
-	headerLen := int64(len(fileMagic)) + 1
 	_, err = r.Seek(headerLen, io.SeekStart)
 
 	// Read the rest of the file.
@@ -206,31 +207,35 @@ func loadOneSubstitutionList(listSize uint32, substitutionData []byte, check map
 }
 
 // checkHeader checks the file header.
-func checkHeader(filePath string) error {
+func checkHeader(filePath string) (int64, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer filehelper.CloseWithName(f)
 
+	var totalLen int
+	var readLen int
 	// Check magic bytes.
 	buffer := make([]byte, len(fileMagic))
-	_, err = f.Read(buffer)
+	readLen, err = f.Read(buffer)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	if !bytes.Equal(buffer, fileMagic) {
-		return errors.New(`invalid file type`)
+		return 0, errors.New(`invalid file type`)
 	}
+	totalLen = readLen
 
 	// Check version number.
-	_, err = f.Read(buffer[:1])
+	readLen, err = f.Read(buffer[:1])
 	if err != nil {
-		return err
+		return 0, err
 	}
 	if buffer[0] != actVersion {
-		return fmt.Errorf(`unknown file version`)
+		return 0, fmt.Errorf(`unknown file version`)
 	}
+	totalLen += readLen
 
-	return nil
+	return int64(totalLen), nil
 }

@@ -116,7 +116,7 @@ func (r *Reader) Seek(offset int64, whence int) (ret int64, err error) {
 	ret, err = r.file.Seek(offset, whence)
 	r.position = ret
 
-	return ret, err
+	return
 }
 
 // Read reads data from the file into the provided buffer.
