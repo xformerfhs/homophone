@@ -108,6 +108,17 @@ func (r *Reader) DataLen() int64 {
 	return r.dataLen
 }
 
+// Seek sets the offset for the next Read or Write on file to offset,
+// interpreted according to whence: 0 means relative to the origin of the file,
+// 1 means relative to the current offset, and 2 means relative to the end.
+// It returns the new offset and an error, if any.
+func (r *Reader) Seek(offset int64, whence int) (ret int64, err error) {
+	ret, err = r.file.Seek(offset, whence)
+	r.position = ret
+
+	return ret, err
+}
+
 // Read reads data from the file into the provided buffer.
 func (r *Reader) Read(p []byte) (n int, err error) {
 	// 1. If the position is at or beyond the data length, return EOF.

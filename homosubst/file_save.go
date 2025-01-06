@@ -40,6 +40,7 @@ import (
 	"io"
 )
 
+// Save saves substitution data to a substitution file.
 func (s *Substitutor) Save(filePath string) error {
 	w, err := integritycheckedfile.NewWriter(
 		filePath,

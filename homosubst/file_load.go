@@ -20,12 +20,13 @@
 //
 // Author: Frank Schwab
 //
-// Version: 2.0.1
+// Version: 2.1.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
 //    2025-01-04: V2.0.0: Restructured.
 //    2025-01-05: V2.0.1: Read substitution data in Go style.
+//    2025-01-06: V2.1.0: Check file header before checking file integrity.
 //
 
 package homosubst
@@ -40,10 +41,21 @@ import (
 	"homophone/integritycheckedfile"
 	"homophone/keygenerator"
 	"homophone/randomlist"
+	"io"
+	"os"
 )
 
+// NewLoad creates a new [Substitutor] from a substitution file.
 func NewLoad(substFileName string) (*Substitutor, error) {
-	r, err := integritycheckedfile.NewReader(
+	var err error
+
+	err = checkHeader(substFileName)
+	if err != nil {
+		return nil, err
+	}
+
+	var r *integritycheckedfile.Reader
+	r, err = integritycheckedfile.NewReader(
 		substFileName,
 		sha3.New256,
 		keygenerator.GenerateKey(generator, salt),
@@ -53,31 +65,17 @@ func NewLoad(substFileName string) (*Substitutor, error) {
 	}
 	defer filehelper.CloseWithName(r)
 
+	// Check data length.
 	if r.DataLen() != substitutionDataLength {
 		return nil, errors.New(`wrong file size`)
 	}
 
-	// Check magic bytes.
-	buffer := make([]byte, len(fileMagic))
-	_, err = r.Read(buffer)
-	if err != nil {
-		return nil, err
-	}
-	if !bytes.Equal(buffer, fileMagic) {
-		return nil, errors.New(`unknown file format`)
-	}
-
-	// Check version number.
-	_, err = r.Read(buffer[:1])
-	if err != nil {
-		return nil, err
-	}
-	if buffer[0] != actVersion {
-		return nil, fmt.Errorf(`unknown version`)
-	}
+	// Skip the header that has been checked at the start of this function.
+	headerLen := int64(len(fileMagic)) + 1
+	_, err = r.Seek(headerLen, io.SeekStart)
 
 	// Read the rest of the file.
-	substitutionData := make([]byte, int(r.DataLen())-len(fileMagic)-1)
+	substitutionData := make([]byte, int(r.DataLen()-headerLen))
 	var readBytes int
 	readBytes, err = r.Read(substitutionData)
 	if err != nil {
@@ -205,4 +203,34 @@ func loadOneSubstitutionList(listSize uint32, substitutionData []byte, check map
 	}
 
 	return list, substitutionData, nil
+}
+
+// checkHeader checks the file header.
+func checkHeader(filePath string) error {
+	f, err := os.Open(filePath)
+	if err != nil {
+		return err
+	}
+	defer filehelper.CloseWithName(f)
+
+	// Check magic bytes.
+	buffer := make([]byte, len(fileMagic))
+	_, err = f.Read(buffer)
+	if err != nil {
+		return err
+	}
+	if !bytes.Equal(buffer, fileMagic) {
+		return errors.New(`unknown file type`)
+	}
+
+	// Check version number.
+	_, err = f.Read(buffer[:1])
+	if err != nil {
+		return err
+	}
+	if buffer[0] != actVersion {
+		return fmt.Errorf(`unknown file version`)
+	}
+
+	return nil
 }
