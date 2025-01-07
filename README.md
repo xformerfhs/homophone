@@ -33,7 +33,7 @@ xychart-beta
 ```
 
 One can see that the `E` stands out quite a bit.
-Also `T` and `A` can be easily recognized in a text by their frequency.
+Also, the `T` can be easily recognized in a text by its frequency.
 
 In order to flatten the statistical distribution of the characters one can map the frequent characters with multiple substitutions.
 For this to work the destination alphabet has to have much more characters than the source alphabet.
@@ -152,7 +152,7 @@ In the first example a text file with the name `message.txt` is encrypted:
 homophone encrypt -in message.txt
 ```
 
-This prints the following output:
+This generates the following output:
 
 ```
 Source file: 'message.txt'
@@ -190,8 +190,8 @@ Substitution file: 'message_txt.subst'
 The first line prints the name of the source file.
 Then the substitution mapping is printed.
 To the left is the clear text character and to the right the characters it is substituted with.
-If there are no letters after the colon the clear text character does not appear in the clear text.
-This is list is the key and is saved in the `key` file.
+If there are no letters after the colon the character does not appear in the clear text.
+This list is the key and is saved in the `key` file.
 
 The encrypted file looks like this:
 
@@ -204,7 +204,7 @@ The encrypted file can be decrypted with the following call:
 ```
 homophone decrypt -in message_homophone.txt
 ```
-This prints the following output:
+This generates the following output:
 
 ```
 Encrypted file: 'message_homophone.txt'
@@ -245,7 +245,7 @@ In the next example all options are used for encryption:
 homophone encrypt -in message.txt -out secret.txt -key innocent.jpg -keep
 ```
 
-This prints the following output:
+This generates the following output:
 
 ```
    A: YCq
@@ -312,7 +312,7 @@ The file can be decrypted with the following call:
 homophone decrypt -in secret.txt -out clear.txt -key innocent.jpg
 ```
 
-This produces the following output:
+This generates the following output:
 
 ```
 Encrypted file: 'secret.txt'
