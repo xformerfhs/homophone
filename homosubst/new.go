@@ -20,13 +20,14 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.2.0
+// Version: 2.0.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
 //    2025-01-03: V1.1.0: Use "randomlist".
 //    2025-01-03: V1.1.1: Refactor "getSubstitutionLengths". Fix randomAdjustment.
 //    2025-01-05: V1.2.0: Correct substitution alphabet.
+//    2025-02-08: V2.0.0: Use rune scanner, make substitution length calculation faster.
 //
 
 package homosubst
@@ -35,10 +36,10 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"homophone/distributor"
 	"homophone/filehelper"
 	"homophone/randomlist"
 	"homophone/slicehelper"
-	"math"
 	"math/rand/v2"
 	"os"
 	"unicode"
@@ -105,7 +106,7 @@ func getFrequenciesFromFile(fileName string) ([]int, int, error) {
 
 	reader := bufio.NewReader(file)
 	scanner := bufio.NewScanner(reader)
-	scanner.Split(bufio.ScanLines)
+	scanner.Split(bufio.ScanRunes)
 	for scanner.Scan() {
 		text := scanner.Text()
 		for _, r := range text {
@@ -129,57 +130,58 @@ func getFrequenciesFromFile(fileName string) ([]int, int, error) {
 // from the frequencies.
 func getSubstitutionLengths(sourceFrequencies []int, totalCount int, substitutionAlphabetSize uint16) ([]uint16, error) {
 	result := make([]uint16, sourceAlphabetSize)
-	countPerSource := float64(totalCount) / float64(substitutionAlphabetSize)
-	stepSize := countPerSource * 0.5
-	stepThreshold := 0.5 / float64(totalCount)
 
-	// Vary the count per source until the sum of the substitution lengths
-	// matches the number of characters in the substitution alphabet.
-	for {
-		// 1. Calculate the substitution lengths from the frequencies.
-		resultCount := calculateSubstitutionLengths(sourceFrequencies, countPerSource, result)
+	// 1. Calculate the substitution lengths from the frequencies.
+	//    This may not yield the substitution alphabet size if there are
+	//    characters that have the same count.
+	resultCount := calculateSubstitutionLengths(sourceFrequencies, totalCount, substitutionAlphabetSize, result)
 
-		// 2. If the number is not correct, make a bisection.
-		if resultCount > substitutionAlphabetSize {
-			countPerSource += stepSize
-		} else {
-			if resultCount < substitutionAlphabetSize {
-				countPerSource -= stepSize
-			} else {
-				// We got the right number. Done.
-				break
-			}
-		}
-
-		// 3. Halve the step size.
-		stepSize *= 0.5
-		if stepSize < stepThreshold {
-			// There is no converging solution, but we are near.
-			// Make random adjustments to match [substitutionAlphabetSize].
-			if randomAdjustment(result, substitutionAlphabetSize, resultCount) == 0 {
-				break
-			} else {
-				// Bail out, if it is still not possible to match [substitutionAlphabetSize].
-				return nil, errors.New(`unable to find a distribution`)
-			}
+	// 2. If the calculated distribution does not match the substitution alphabet size
+	//    randomly change lengths until the sizes match.
+	if resultCount != substitutionAlphabetSize {
+		if randomAdjustment(result, substitutionAlphabetSize, resultCount) != 0 {
+			// Bail out, if it is still not possible to match [substitutionAlphabetSize].
+			return nil, errors.New(`unable to find a distribution`)
 		}
 	}
 
 	return result, nil
 }
 
-// calculateSubstitutionLengths calculates the substitution lengths with the current [countPerSource]
-func calculateSubstitutionLengths(sourceFrequencies []int, countPerSource float64, substitutionLengths []uint16) uint16 {
+// calculateSubstitutionLengths calculates the substitution lengths.
+// The result may not have the correct substitution count. This will be the case if there are
+// a lot of characters with the same count.
+func calculateSubstitutionLengths(sourceFrequencies []int, totalCount int, substitutionAlphabetSize uint16, substitutionLengths []uint16) uint16 {
+	substitutionCount := initializeSubstitutionLengths(sourceFrequencies, substitutionLengths)
+
+	// 2. Distribute the remaining substitution alphabet size among the characters.
+	additionalLengths, distributedLengths := distributor.SainteLagueDistribution(
+		sourceFrequencies,
+		totalCount,
+		substitutionAlphabetSize-substitutionCount)
+
+	// 3. Add the distributed lengths to the count of 1 that has already been set.
+	for i := range substitutionLengths {
+		substitutionLengths[i] += additionalLengths[i]
+	}
+
+	substitutionCount += distributedLengths
+
+	return substitutionCount
+}
+
+// initializeSubstitutionLengths initializes the substitution lengths to have the value 1 for each
+// character that appears in the source.
+func initializeSubstitutionLengths(sourceFrequencies []int, substitutionLengths []uint16) uint16 {
 	substitutionCount := uint16(0)
+	// 1. Each source character gets one substitution character.
 	for i, f := range sourceFrequencies {
 		// Only calculate a substitution length if the value occurs, at all.
 		if f != 0 {
-			substitutionLength := hillHuntingtonRound(f, countPerSource)
-			substitutionLengths[i] = substitutionLength
-			substitutionCount += substitutionLength
+			substitutionLengths[i] = 1
+			substitutionCount++
 		}
 	}
-
 	return substitutionCount
 }
 
@@ -210,20 +212,6 @@ func getSubstitutionAlphabetIndex(used []bool, usedSize uint16) int {
 			used[i] = true
 			return i
 		}
-	}
-}
-
-// hillHuntingRound rounds the quotient of count/countPerSource according to the
-// Hill/Huntington method (https://en.wikipedia.org/wiki/Huntington%E2%80%93Hill_method).
-func hillHuntingtonRound(count int, countPerSource float64) uint16 {
-	proportion := float64(count) / countPerSource
-	minProportion := math.Floor(proportion)
-	maxProportion := minProportion + 1
-	roundingBoundary := math.Sqrt(minProportion * maxProportion)
-	if proportion < roundingBoundary {
-		return uint16(minProportion)
-	} else {
-		return uint16(maxProportion)
 	}
 }
 

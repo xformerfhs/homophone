@@ -20,7 +20,7 @@
 //
 // Author: Frank Schwab
 //
-// Version: 2.2.2
+// Version: 2.3.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
@@ -31,6 +31,7 @@
 //    2025-01-05: V2.2.1: Correct handling of additional data that are not flags.
 //    2025-01-06: V2.2.2: Correct error handling for substitution files.
 //    2025-01-06: V2.2.3: Rename substitution file loader.
+//    2025-02-08: V2.3.0: Faster substitution calculation.
 //
 
 package main
@@ -42,7 +43,7 @@ import (
 )
 
 // myVersion contains the current version of this program.
-const myVersion = `2.2.3`
+const myVersion = `2.3.0`
 
 // myCopyright contains the copyright of this program.
 const myCopyright = `Copyright (c) 2024-2025 Frank Schwab`
