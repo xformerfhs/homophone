@@ -145,7 +145,7 @@ func calculateSubstitutionLengths(
 	substitutionCount := initializeSubstitutionLengths(sourceFrequencies, substitutionLengths)
 
 	// 2. Distribute the remaining substitution alphabet size among the characters.
-	remainingCount := uint16(substitutionAlphabetSize - substitutionCount)
+	remainingCount := substitutionAlphabetSize - substitutionCount
 	additionalLengths := distributor.SainteLagueDistribution(
 		sourceFrequencies,
 		totalCount,
