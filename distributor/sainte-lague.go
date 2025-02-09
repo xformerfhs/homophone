@@ -20,33 +20,31 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.0.0
+// Version: 2.0.0
 //
 // Change history:
 //    2025-02-08: V1.0.0: Created.
+//    2025-02-09: V2.0.0: Use generic interface.
 //
 
-// Package distributor contains functions to distribute the counts to
-// a number of "seats".
+// Package distributor contains functions to distribute counts to a number of seats.
 package distributor
 
 import (
+	"homophone/constraints"
 	"math"
 )
 
 // ******** Public functions ********
 
 // SainteLagueDistribution implements the Sainte-Laguë method for distributing a number of counts
-// to a number of seats. There are cases when this method does not find a matching distribution.
-// In this case a distribution that is nearly correct is returned.
-// The caller can check this with the second returned variable that contains the number of seats
-// that have been distributed.
-func SainteLagueDistribution(counts []int, totalCount int, wantedSeatCount uint16) ([]uint16, uint16) {
+// to a number of seats.
+func SainteLagueDistribution[T constraints.Integer](counts []T, totalCount uint, wantedSeatCount uint) []uint {
 	divisor := float64(totalCount) / float64(wantedSeatCount)
-	intSeats := make([]uint16, len(counts))
-	floatSeats := make([]float64, len(counts))
-	distributedSeatCount := uint16(0)
 	lastDivisor := 0.0
+	intSeats := make([]uint, len(counts))
+	floatSeats := make([]float64, len(counts))
+	distributedSeatCount := uint(0)
 
 	for {
 		distributedSeatCount = 0
@@ -54,13 +52,16 @@ func SainteLagueDistribution(counts []int, totalCount int, wantedSeatCount uint1
 		for i, count := range counts {
 			floatSeatsCount := float64(count) / divisor
 			floatSeats[i] = floatSeatsCount
-			intSeatsCount := uint16(math.Round(floatSeatsCount))
+			intSeatsCount := uint(math.Round(floatSeatsCount))
 			intSeats[i] = intSeatsCount
 			distributedSeatCount += intSeatsCount
 		}
 
 		if distributedSeatCount != wantedSeatCount {
 			if nearlyEqual(lastDivisor, divisor) {
+				// Unable to find a distribution because of too many equal counts.
+				// Make random adjustments. This is the only way to fix this.
+				randomAdjustment(intSeats, distributedSeatCount, wantedSeatCount)
 				break
 			} else {
 				lastDivisor = divisor
@@ -71,13 +72,13 @@ func SainteLagueDistribution(counts []int, totalCount int, wantedSeatCount uint1
 		}
 	}
 
-	return intSeats, distributedSeatCount
+	return intSeats
 }
 
 // ******** Private functions ********
 
 // nextDivisor calculates the next number of seats in the correct direction.
-func nextDivisor(counts []int, floatSeats []float64, needMore bool) float64 {
+func nextDivisor[T constraints.Integer](counts []T, floatSeats []float64, needMore bool) float64 {
 	if needMore {
 		return nextDivisorUp(counts, floatSeats)
 	} else {
@@ -86,11 +87,11 @@ func nextDivisor(counts []int, floatSeats []float64, needMore bool) float64 {
 }
 
 // nextDivisorUp calculates the next divisor when more seats are needed.
-func nextDivisorUp(counts []int, floatSeats []float64) float64 {
+func nextDivisorUp[T constraints.Integer](counts []T, floatSeats []float64) float64 {
 	maxSeatBoundary := 0.0
 	secondSeatBoundary := 0.0
 	for i, floatSeat := range floatSeats {
-		if floatSeat != 0.0 {
+		if floatSeat > 0.0 {
 			seatBoundary := float64(counts[i]) / nextHalfSeatUp(floatSeat)
 
 			if seatBoundary > maxSeatBoundary {
@@ -111,12 +112,12 @@ func nextDivisorUp(counts []int, floatSeats []float64) float64 {
 	}
 }
 
-// nextDivisorDown calculates the next divisor when less seats are needed.
-func nextDivisorDown(counts []int, floatSeats []float64) float64 {
+// nextDivisorDown calculates the next divisor when fewer seats are needed.
+func nextDivisorDown[T constraints.Integer](counts []T, floatSeats []float64) float64 {
 	minSeatBoundary := math.MaxFloat64
 	secondSeatBoundary := math.MaxFloat64
 	for i, floatSeat := range floatSeats {
-		if floatSeat != 0.0 {
+		if floatSeat > 0.0 {
 			seatBoundary := float64(counts[i]) / nextHalfSeatDown(floatSeat)
 
 			if seatBoundary < minSeatBoundary {
@@ -137,7 +138,7 @@ func nextDivisorDown(counts []int, floatSeats []float64) float64 {
 	}
 }
 
-// nextHalfSeatDown gets the next number of seats rounded up to the next
+// nextHalfSeatUp gets the next number of seats rounded up to the next
 // half between two integers.
 func nextHalfSeatUp(floatSeat float64) float64 {
 	doubleSeat := int(math.Ceil(floatSeat + floatSeat))
@@ -159,8 +160,10 @@ func nextHalfSeatDown(floatSeat float64) float64 {
 	return float64(doubleSeat) * 0.5
 }
 
-// nearlyEqual compares two float64 numbers if they are nearer than 0.000001.
-func nearlyEqual(a float64, b float64) bool {
+// nearlyEqual compares two float64 numbers if they are equal or nearly equal.
+// Floating point numbers should not be tested for equality, because different
+// calculation methods yield slightly different values for the same result.
+func nearlyEqual(a, b float64) bool {
 	if a == b {
 		return true
 	} else {

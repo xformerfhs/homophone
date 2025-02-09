@@ -34,12 +34,10 @@ package homosubst
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"homophone/distributor"
 	"homophone/filehelper"
 	"homophone/randomlist"
-	"homophone/slicehelper"
 	"math/rand/v2"
 	"os"
 	"unicode"
@@ -94,15 +92,15 @@ func NewSubstitutor(sourceFileName string) (*Substitutor, error) {
 // ******** Private functions ********
 
 // getFrequenciesFromFile calculates the frequencies of each character in the file.
-func getFrequenciesFromFile(fileName string) ([]int, int, error) {
+func getFrequenciesFromFile(fileName string) ([]uint, uint, error) {
 	file, err := os.Open(fileName)
 	if err != nil {
 		return nil, 0, err
 	}
 	defer filehelper.CloseWithName(file)
 
-	frequencies := make([]int, sourceAlphabetSize)
-	totalCount := 0
+	frequencies := make([]uint, sourceAlphabetSize)
+	totalCount := uint(0)
 
 	reader := bufio.NewReader(file)
 	scanner := bufio.NewScanner(reader)
@@ -128,22 +126,10 @@ func getFrequenciesFromFile(fileName string) ([]int, int, error) {
 
 // getSubstitutionLengths calculates the number of substitutions for each character
 // from the frequencies.
-func getSubstitutionLengths(sourceFrequencies []int, totalCount int, substitutionAlphabetSize uint16) ([]uint16, error) {
+func getSubstitutionLengths(sourceFrequencies []uint, totalCount uint, substitutionAlphabetSize uint16) ([]uint16, error) {
 	result := make([]uint16, sourceAlphabetSize)
 
-	// 1. Calculate the substitution lengths from the frequencies.
-	//    This may not yield the substitution alphabet size if there are
-	//    characters that have the same count.
-	resultCount := calculateSubstitutionLengths(sourceFrequencies, totalCount, substitutionAlphabetSize, result)
-
-	// 2. If the calculated distribution does not match the substitution alphabet size
-	//    randomly change lengths until the sizes match.
-	if resultCount != substitutionAlphabetSize {
-		if randomAdjustment(result, substitutionAlphabetSize, resultCount) != 0 {
-			// Bail out, if it is still not possible to match [substitutionAlphabetSize].
-			return nil, errors.New(`unable to find a distribution`)
-		}
-	}
+	calculateSubstitutionLengths(sourceFrequencies, totalCount, substitutionAlphabetSize, result)
 
 	return result, nil
 }
@@ -151,28 +137,31 @@ func getSubstitutionLengths(sourceFrequencies []int, totalCount int, substitutio
 // calculateSubstitutionLengths calculates the substitution lengths.
 // The result may not have the correct substitution count. This will be the case if there are
 // a lot of characters with the same count.
-func calculateSubstitutionLengths(sourceFrequencies []int, totalCount int, substitutionAlphabetSize uint16, substitutionLengths []uint16) uint16 {
+func calculateSubstitutionLengths(
+	sourceFrequencies []uint,
+	totalCount uint,
+	substitutionAlphabetSize uint16,
+	substitutionLengths []uint16) {
 	substitutionCount := initializeSubstitutionLengths(sourceFrequencies, substitutionLengths)
 
 	// 2. Distribute the remaining substitution alphabet size among the characters.
-	additionalLengths, distributedLengths := distributor.SainteLagueDistribution(
+	remainingCount := uint16(substitutionAlphabetSize - substitutionCount)
+	additionalLengths := distributor.SainteLagueDistribution(
 		sourceFrequencies,
 		totalCount,
-		substitutionAlphabetSize-substitutionCount)
+		uint(remainingCount))
 
 	// 3. Add the distributed lengths to the count of 1 that has already been set.
 	for i := range substitutionLengths {
-		substitutionLengths[i] += additionalLengths[i]
+		substitutionLengths[i] += uint16(additionalLengths[i])
 	}
 
-	substitutionCount += distributedLengths
-
-	return substitutionCount
+	substitutionCount += remainingCount
 }
 
 // initializeSubstitutionLengths initializes the substitution lengths to have the value 1 for each
 // character that appears in the source.
-func initializeSubstitutionLengths(sourceFrequencies []int, substitutionLengths []uint16) uint16 {
+func initializeSubstitutionLengths(sourceFrequencies []uint, substitutionLengths []uint16) uint16 {
 	substitutionCount := uint16(0)
 	// 1. Each source character gets one substitution character.
 	for i, f := range sourceFrequencies {
@@ -213,39 +202,4 @@ func getSubstitutionAlphabetIndex(used []bool, usedSize uint16) int {
 			return i
 		}
 	}
-}
-
-// randomAdjustment makes random adjustments to the substitution lengths until the total count matches the wanted count.
-func randomAdjustment(substitutionCount []uint16, wantedCount uint16, currentCount uint16) int16 {
-	diffCount := int16(currentCount) - int16(wantedCount)
-	substitutionLength := len(substitutionCount)
-	eligibleIndices := make([]int, 0)
-	for i := 0; i < substitutionLength; i++ {
-		if substitutionCount[i] > 1 {
-			eligibleIndices = append(eligibleIndices, i)
-		}
-	}
-
-	eligibleLength := len(eligibleIndices)
-	for diffCount != 0 && eligibleLength != 0 {
-		i := rand.IntN(eligibleLength)
-		si := eligibleIndices[i]
-		c := substitutionCount[si]
-		if diffCount > 0 {
-			c--
-			diffCount--
-		} else {
-			c++
-			diffCount++
-		}
-
-		substitutionCount[si] = c
-
-		if diffCount != 0 {
-			eligibleIndices = slicehelper.RemoveNoOrder(eligibleIndices, i)
-			eligibleLength--
-		}
-	}
-
-	return diffCount
 }
