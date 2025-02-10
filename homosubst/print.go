@@ -20,25 +20,46 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.1.0
+// Version: 2.0.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
-//    2025-01-03: V1.1.0: Use "randomlist".
+//    2025-02-10: V2.0.0: Print proportions, if present.
 //
 
 package homosubst
 
 import "fmt"
 
+// ******** Public functions ********
+
 // Print prints all substitutions.
 func (s *Substitutor) Print() {
 	substitutions := s.substitutions
+	proportions := s.proportions
 	for i, substitution := range substitutions {
-		fmt.Printf(`   %c: `, i+'A')
+		fmt.Printf(`   %c`, i+'A')
+		if proportions != nil {
+			printProportion(proportions[i])
+		}
+		fmt.Print(`: `)
+
 		for _, r := range substitution.BaseList() {
 			fmt.Printf(`%c`, r)
 		}
+
 		fmt.Println()
 	}
+}
+
+// ******** Private functions ********
+
+// printProportion prints a proportion.
+func printProportion(proportion uint16) {
+	fmt.Print(` (`)
+	fixProportion := proportion / 100
+	fmt.Printf(`%3d`, fixProportion)
+	fmt.Print(`.`)
+	fmt.Printf(`%02d`, proportion-(fixProportion*100))
+	fmt.Print(`%)`)
 }

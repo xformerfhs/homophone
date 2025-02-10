@@ -37,5 +37,6 @@ import "homophone/randomlist"
 // Substitutor contains the data needed for a homophonic substitution cipher.
 type Substitutor struct {
 	substitutions            []*randomlist.RandomList[rune]
+	proportions              []uint16
 	substitutionAlphabetSize uint16
 }

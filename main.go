@@ -20,7 +20,7 @@
 //
 // Author: Frank Schwab
 //
-// Version: 2.5.0
+// Version: 2.6.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
@@ -34,6 +34,7 @@
 //    2025-02-08: V2.3.0: Faster substitution calculation.
 //    2025-02-09: V2.4.0: Make substitution calculation more robust.
 //    2025-02-09: V2.5.0: Simplified random adjustment, corrected distributor.
+//    2025-02-10: V2.6.0: Show proportions when encrypting.
 //
 
 package main
@@ -45,7 +46,7 @@ import (
 )
 
 // myVersion contains the current version of this program.
-const myVersion = `2.5.0`
+const myVersion = `2.6.0`
 
 // myCopyright contains the copyright of this program.
 const myCopyright = `Copyright (c) 2024-2025 Frank Schwab`

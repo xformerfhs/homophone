@@ -110,10 +110,15 @@ func (s *Substitutor) encryptOneLine(text string, writer *bufio.Writer, keepOthe
 	var err error
 
 	for _, r := range text {
-		r = unicode.ToUpper(r)
-		if r >= 'A' && r <= 'Z' {
+		switch {
+		case r >= 'a' && r <= 'z':
+			r = unicode.ToUpper(r)
+			fallthrough
+
+		case r >= 'A' && r <= 'Z':
 			_, err = writer.WriteRune(s.SubstituteRune(r))
-		} else {
+
+		default:
 			if keepOthers {
 				_, err = writer.WriteRune(r)
 			}

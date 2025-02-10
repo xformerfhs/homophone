@@ -47,7 +47,7 @@ import (
 	"os"
 )
 
-// NewFromFile creates a new [Substitutor] from a substitution file.
+// NewFromFile creates a new Substitutor from a substitution file.
 func NewFromFile(substFileName string) (*Substitutor, error) {
 	var err error
 

@@ -20,7 +20,7 @@
 //
 // Author: Frank Schwab
 //
-// Version: 2.0.0
+// Version: 2.1.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
@@ -28,6 +28,7 @@
 //    2025-01-03: V1.1.1: Refactor "getSubstitutionLengths". Fix randomAdjustment.
 //    2025-01-05: V1.2.0: Correct substitution alphabet.
 //    2025-02-08: V2.0.0: Use rune scanner, make substitution length calculation faster.
+//    2025-02-10: V2.1.0: Calculate proportions from frequencies.
 //
 
 package homosubst
@@ -38,6 +39,7 @@ import (
 	"homophone/distributor"
 	"homophone/filehelper"
 	"homophone/randomlist"
+	"math"
 	"math/rand/v2"
 	"os"
 	"unicode"
@@ -71,6 +73,8 @@ func NewSubstitutor(sourceFileName string) (*Substitutor, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	result.proportions = makeProportions(sourceFrequencies, totalCount)
 
 	if totalCount == 0 {
 		return nil, fmt.Errorf(`source file '%s' has no characters in the range A-Z`, sourceFileName)
@@ -122,6 +126,18 @@ func getFrequenciesFromFile(fileName string) ([]uint, uint, error) {
 	}
 
 	return frequencies, totalCount, nil
+}
+
+// makeProportions calculates the proportions of each character as the proportion times 100.
+func makeProportions(sourceFrequencies []uint, totalCount uint) []uint16 {
+	result := make([]uint16, len(sourceFrequencies))
+
+	onePart := 10000.0 / float64(totalCount)
+	for i, f := range sourceFrequencies {
+		result[i] = uint16(math.RoundToEven(float64(f) * onePart))
+	}
+
+	return result
 }
 
 // getSubstitutionLengths calculates the number of substitutions for each character
