@@ -157,32 +157,32 @@ This generates the following output:
 ```
 Source file: 'message.txt'
 Substitutions:
-   A: rvG
-   B: M
-   C: XP
-   D: i
-   E: mjhaVtz
-   F: C
-   G: B
-   H: QH
-   I: OkJ
-   J: S
-   K: q
-   L: bZ
-   M: p
-   N: Eu
-   O: cFUW
-   P: A
-   Q: d
-   R: Twn
-   S: yKI
-   T: LfYeD
-   U: xg
-   V: N
-   W: o
-   X: R
-   Y: s
-   Z: l
+   A (  4.20%): Gd
+   B (  1.88%): rM
+   C (  2.91%): XT
+   D (  6.30%): woH
+   E ( 19.54%): ngqcpfe
+   F (  1.21%): J
+   G (  3.71%): Yz
+   H (  4.65%): DN
+   I (  7.91%): VuP
+   J (  0.18%): k
+   K (  0.94%): Z
+   L (  4.07%): mt
+   M (  2.59%): yC
+   N ( 10.95%): lRba
+   O (  2.32%): IO
+   P (  0.27%): S
+   Q (  0.00%):
+   R (  7.82%): xLj
+   S (  6.57%): vWB
+   T (  4.96%): hUs
+   U (  3.80%): Qi
+   V (  0.94%): E
+   W (  1.61%): A
+   X (  0.00%):
+   Y (  0.04%): F
+   Z (  0.63%): K
 Encrypted file: 'message_homophone.txt'
 Substitution file: 'message_txt.subst'
 ```
@@ -210,32 +210,32 @@ This generates the following output:
 Encrypted file: 'message_homophone.txt'
 Loaded substitution file 'message_txt.subst'
 Substitutions:
-   A: rvG
-   B: M
-   C: XP
-   D: i
-   E: mjhaVtz
-   F: C
-   G: B
-   H: QH
-   I: OkJ
-   J: S
-   K: q
-   L: bZ
-   M: p
-   N: Eu
-   O: cFUW
-   P: A
-   Q: d
-   R: Twn
-   S: yKI
-   T: LfYeD
-   U: xg
-   V: N
-   W: o
-   X: R
-   Y: s
-   Z: l
+   A: Gd
+   B: rM
+   C: XT
+   D: woH
+   E: ngqcpfe
+   F: J
+   G: Yz
+   H: DN
+   I: VuP
+   J: k
+   K: Z
+   L: mt
+   M: yC
+   N: lRba
+   O: IO
+   P: S
+   Q:
+   R: xLj
+   S: vWB
+   T: hUs
+   U: Qi
+   V: E
+   W: A
+   X:
+   Y: F
+   Z: K
 Decrypted file: 'message_decrypted.txt'
 ```
 
@@ -248,32 +248,34 @@ homophone encrypt -in message.txt -out secret.txt -key innocent.jpg -keep
 This generates the following output:
 
 ```
-   A: YCq
-   B: X
-   C: Gl
-   D: O
-   E: iwDjxBg
-   F: E
-   G: c
-   H: dh
-   I: obA
-   J: Z
-   K: R
-   L: Hy
-   M: K
-   N: et
-   O: kSrI
-   P: F
-   Q: f
-   R: JMn
-   S: LmV
-   T: PsuTN
-   U: va
-   V: U
-   W: p
-   X: z
-   Y: W
-   Z: Q
+Source file: 'message.txt'
+Substitutions:
+   A (  4.20%): ir
+   B (  1.88%): KO
+   C (  2.91%): Iw
+   D (  6.30%): Heu
+   E ( 19.54%): vTBkMoJ
+   F (  1.21%): b
+   G (  3.71%): LS
+   H (  4.65%): lx
+   I (  7.91%): WAm
+   J (  0.18%): g
+   K (  0.94%): j
+   L (  4.07%): Un
+   M (  2.59%): XY
+   N ( 10.95%): VcaC
+   O (  2.32%): fP
+   P (  0.27%): t
+   Q (  0.00%):
+   R (  7.82%): zyh
+   S (  6.57%): Rqp
+   T (  4.96%): EGN
+   U (  3.80%): QZ
+   V (  0.94%): D
+   W (  1.61%): s
+   X (  0.00%):
+   Y (  0.04%): d
+   Z (  0.63%): F
 Encrypted file: 'secret.txt'
 Substitution file: 'innocent.jpg'
 ```
@@ -318,32 +320,33 @@ This generates the following output:
 Encrypted file: 'secret.txt'
 Loaded substitution file 'innocent.jpg'
 Substitutions:
-   A: YCq
-   B: X
-   C: Gl
-   D: O
-   E: iwDjxBg
-   F: E
-   G: c
-   H: dh
-   I: obA
-   J: Z
-   K: R
-   L: Hy
-   M: K
-   N: et
-   O: kSrI
-   P: F
-   Q: f
-   R: JMn
-   S: LmV
-   T: PsuTN
-   U: va
-   V: U
-   W: p
-   X: z
-   Y: W
-   Z: Q
+Substitutions:
+   A: ir
+   B: KO
+   C: Iw
+   D: Heu
+   E: vTBkMoJ
+   F: b
+   G: LS
+   H: lx
+   I: WAm
+   J: g
+   K: j
+   L: Un
+   M: XY
+   N: VcaC
+   O: fP
+   P: t
+   Q:
+   R: zyh
+   S: Rqp
+   T: EGN
+   U: QZ
+   V: D
+   W: s
+   X:
+   Y: d
+   Z: F
 Decrypted file: 'clear.txt'
 ```
 
