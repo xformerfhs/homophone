@@ -20,10 +20,11 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.0.0
+// Version: 1.1.0
 //
 // Change history:
 //    2025-02-08: V1.0.0: Created.
+//    2025-02-10: V1.1.0: Refactor constants out of statements.
 //
 
 // Package distributor_test contains the tests for the count distributors.
@@ -36,13 +37,23 @@ import (
 	"testing"
 )
 
+// ******** Private constants ********
+
+const formatExpectedGot = `Expected %v, got %v`
+
+const formatExpectedRuns = `Expected %d runs, got %d: %v`
+
+const formatExpectedSpecificRuns = `Expected %d times %d seats, got %v`
+
+// ******** Test functions ********
+
 func TestSainteLagueDistributionSachsen(t *testing.T) {
 	counts := []uint{749_216, 719_274, 277_173, 172_002, 119_964, 104_888}
 	seatsCount := uint(119)
 	expectedSeats := []uint{41, 40, 15, 10, 7, 6}
 	seats := distributor.SainteLagueDistribution(counts, total(counts), seatsCount)
 	if !slices.Equal(expectedSeats, seats) {
-		t.Errorf("Expected %v, got %v", expectedSeats, seats)
+		t.Errorf(formatExpectedGot, expectedSeats, seats)
 	}
 }
 
@@ -52,7 +63,7 @@ func TestSainteLagueMallersdorfPfaffenberg(t *testing.T) {
 	expectedSeats := []uint{8, 6, 3, 3, 0}
 	seats := distributor.SainteLagueDistribution(counts, total(counts), seatsCount)
 	if !slices.Equal(expectedSeats, seats) {
-		t.Errorf("Expected %v, got %v", expectedSeats, seats)
+		t.Errorf(formatExpectedGot, expectedSeats, seats)
 	}
 }
 
@@ -62,7 +73,7 @@ func TestSainteLagueOnlyOne(t *testing.T) {
 	expectedSeats := []uint{37}
 	seats := distributor.SainteLagueDistribution(counts, total(counts), seatsCount)
 	if !slices.Equal(expectedSeats, seats) {
-		t.Errorf("Expected %v, got %v", expectedSeats, seats)
+		t.Errorf(formatExpectedGot, expectedSeats, seats)
 	}
 }
 
@@ -72,13 +83,13 @@ func TestSainteLagueEquals(t *testing.T) {
 	seats := distributor.SainteLagueDistribution(counts, total(counts), seatsCount)
 	runMap := runs(seats)
 	if len(runMap) != 2 {
-		t.Errorf("Expected 2 runs, got %v: %v", len(runMap), runMap)
+		t.Errorf(formatExpectedRuns, 2, len(runMap), runMap)
 	}
 	if runMap[2] != 3 {
-		t.Errorf("Expected 3 times 2 seats, got %v", runMap[2])
+		t.Errorf(formatExpectedSpecificRuns, 3, 2, runMap[2])
 	}
 	if runMap[3] != 2 {
-		t.Errorf("Expected 2 times 3 seats, got %v", runMap[2])
+		t.Errorf(formatExpectedSpecificRuns, 2, 3, runMap[3])
 	}
 }
 
@@ -88,13 +99,32 @@ func TestSainteLagueZeroesAndOnes(t *testing.T) {
 	seats := distributor.SainteLagueDistribution(counts, total(counts), seatsCount)
 	runMap := runs(seats)
 	if len(runMap) != 3 {
-		t.Errorf("Expected 3 runs, got %v: %v", len(runMap), runMap)
+		t.Errorf(formatExpectedRuns, 3, len(runMap), runMap)
 	}
 	if runMap[10] != 3 {
-		t.Errorf("Expected 3 times 10 seats, got %v", runMap[2])
+		t.Errorf(formatExpectedSpecificRuns, 3, 10, runMap[10])
 	}
 	if runMap[11] != 2 {
-		t.Errorf("Expected 2 times 11 seats, got %v", runMap[2])
+		t.Errorf(formatExpectedSpecificRuns, 2, 11, runMap[11])
+	}
+}
+
+func TestSainteLagueRandom(t *testing.T) {
+	counts := []uint16{40, 12, 18, 14, 94, 17, 13, 17, 50, 16, 6, 28, 14, 27, 45, 14, 13, 36, 43, 70, 31, 13, 14, 14, 14, 15}
+	seatsCount := uint(26)
+	seats := distributor.SainteLagueDistribution(counts, total(counts), seatsCount)
+	runMap := runs(seats)
+	if len(runMap) != 3 {
+		t.Errorf(formatExpectedRuns, 3, len(runMap), runMap)
+	}
+	if runMap[0] != 5 {
+		t.Errorf(formatExpectedSpecificRuns, 5, 0, runMap[0])
+	}
+	if runMap[1] != 16 {
+		t.Errorf(formatExpectedSpecificRuns, 16, 1, runMap[1])
+	}
+	if runMap[2] != 5 {
+		t.Errorf(formatExpectedSpecificRuns, 5, 2, runMap[2])
 	}
 }
 

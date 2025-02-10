@@ -20,10 +20,12 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.0.0
+// Version: 1.2.0
 //
 // Change history:
 //    2025-02-09: V1.0.0: Created.
+//    2025-02-09: V1.1.0: Simplified.
+//    2025-02-10: V1.2.0: Fixed sign bug in diff count calculation.
 //
 
 package distributor
@@ -40,16 +42,19 @@ func randomAdjustment(
 	seats []uint,
 	distributedSeatCount uint,
 	wantedSeatCount uint) {
+	diffCount := int(distributedSeatCount) - int(wantedSeatCount)
+	if diffCount == 0 {
+		return
+	}
+
 	equalsList := equalshandler.NewFromValues(seats)
 	candidateLengths := equalsList.SortedLengths()
-	diffCount := distributedSeatCount - wantedSeatCount
-	actCandidate := 0
 
-	for actCandidate < len(candidateLengths) {
+	for actCandidate := 0; actCandidate < len(candidateLengths); actCandidate++ {
 		actIndices := equalsList.Entries(candidateLengths[actCandidate])
 		actIndicesLen := len(actIndices)
 
-		for diffCount != 0 && actIndicesLen != 0 {
+		for actIndicesLen != 0 {
 			i := rand.IntN(actIndicesLen)
 			si := actIndices[i]
 			s := seats[si]
@@ -64,20 +69,14 @@ func randomAdjustment(
 
 			seats[si] = s
 
-			if diffCount != 0 {
+			if diffCount == 0 {
+				return
+			} else {
 				actIndices = slicehelper.RemoveNoOrder(actIndices, i)
 				actIndicesLen--
 			}
 		}
-
-		if diffCount == 0 {
-			break
-		}
-
-		actCandidate++
 	}
 
-	if diffCount != 0 {
-		panic(fmt.Sprintf(`unable to find a matching distribution (diff=%d)`, diffCount))
-	}
+	panic(fmt.Sprintf(`unable to find a matching distribution (diff=%d)`, diffCount))
 }

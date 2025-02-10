@@ -20,14 +20,16 @@
 //
 // Author: Frank Schwab
 //
-// Version: 2.0.0
+// Version: 2.1.0
 //
 // Change history:
 //    2025-02-08: V1.0.0: Created.
 //    2025-02-09: V2.0.0: Use generic interface.
+//    2025-02-10: V2.1.0: Fixed cut off criteria.
 //
 
-// Package distributor contains functions to distribute counts to a number of seats.
+// Package distributor contains functions to distribute counts to
+// a number of seats.
 package distributor
 
 import (
@@ -41,34 +43,38 @@ import (
 // to a number of seats.
 func SainteLagueDistribution[T constraints.Integer](counts []T, totalCount uint, wantedSeatCount uint) []uint {
 	divisor := float64(totalCount) / float64(wantedSeatCount)
-	lastDivisor := 0.0
 	intSeats := make([]uint, len(counts))
 	floatSeats := make([]float64, len(counts))
 	distributedSeatCount := uint(0)
+	minSeatCountDiff := uint(math.MaxInt32)
+	minDivisor := math.MaxFloat64
+	lastSeatCountDiff := uint(0)
 
 	for {
-		distributedSeatCount = 0
+		distributedSeatCount = seatsForDivisor(counts, divisor, floatSeats, intSeats)
 
-		for i, count := range counts {
-			floatSeatsCount := float64(count) / divisor
-			floatSeats[i] = floatSeatsCount
-			intSeatsCount := uint(math.Round(floatSeatsCount))
-			intSeats[i] = intSeatsCount
-			distributedSeatCount += intSeatsCount
+		actSeatCountDiff := absUintDiff(distributedSeatCount, wantedSeatCount)
+		if actSeatCountDiff < minSeatCountDiff {
+			minDivisor = divisor
+			minSeatCountDiff = actSeatCountDiff
 		}
 
-		if distributedSeatCount != wantedSeatCount {
-			if nearlyEqual(lastDivisor, divisor) {
-				// Unable to find a distribution because of too many equal counts.
-				// Make random adjustments. This is the only way to fix this.
-				randomAdjustment(intSeats, distributedSeatCount, wantedSeatCount)
-				break
-			} else {
-				lastDivisor = divisor
-				divisor = nextDivisor(counts, floatSeats, distributedSeatCount < wantedSeatCount)
-			}
-		} else {
+		if actSeatCountDiff == 0 {
 			break
+		}
+
+		if lastSeatCountDiff != 0 && actSeatCountDiff >= lastSeatCountDiff {
+			if distributedSeatCount > minSeatCountDiff {
+				distributedSeatCount = seatsForDivisor(counts, minDivisor, floatSeats, intSeats)
+			}
+
+			// Unable to find a distribution because of too many equal counts.
+			// Make random adjustments. This is the only way to fix this.
+			randomAdjustment(intSeats, distributedSeatCount, wantedSeatCount)
+			break
+		} else {
+			lastSeatCountDiff = actSeatCountDiff
+			divisor = nextDivisor(counts, floatSeats, distributedSeatCount < wantedSeatCount)
 		}
 	}
 
@@ -76,6 +82,20 @@ func SainteLagueDistribution[T constraints.Integer](counts []T, totalCount uint,
 }
 
 // ******** Private functions ********
+
+func seatsForDivisor[T constraints.Integer](counts []T, divisor float64, floatSeats []float64, intSeats []uint) uint {
+	distributedSeatCount := uint(0)
+
+	for i, count := range counts {
+		floatSeatsCount := float64(count) / divisor
+		floatSeats[i] = floatSeatsCount
+		intSeatsCount := uint(math.Round(floatSeatsCount))
+		intSeats[i] = intSeatsCount
+		distributedSeatCount += intSeatsCount
+	}
+
+	return distributedSeatCount
+}
 
 // nextDivisor calculates the next number of seats in the correct direction.
 func nextDivisor[T constraints.Integer](counts []T, floatSeats []float64, needMore bool) float64 {
@@ -98,7 +118,7 @@ func nextDivisorUp[T constraints.Integer](counts []T, floatSeats []float64) floa
 				secondSeatBoundary = maxSeatBoundary
 				maxSeatBoundary = seatBoundary
 			} else {
-				if seatBoundary > secondSeatBoundary {
+				if seatBoundary != maxSeatBoundary && seatBoundary > secondSeatBoundary {
 					secondSeatBoundary = seatBoundary
 				}
 			}
@@ -117,14 +137,14 @@ func nextDivisorDown[T constraints.Integer](counts []T, floatSeats []float64) fl
 	minSeatBoundary := math.MaxFloat64
 	secondSeatBoundary := math.MaxFloat64
 	for i, floatSeat := range floatSeats {
-		if floatSeat > 0.0 {
+		if floatSeat > 0.5 {
 			seatBoundary := float64(counts[i]) / nextHalfSeatDown(floatSeat)
 
 			if seatBoundary < minSeatBoundary {
 				secondSeatBoundary = minSeatBoundary
 				minSeatBoundary = seatBoundary
 			} else {
-				if seatBoundary < secondSeatBoundary {
+				if seatBoundary != minSeatBoundary && seatBoundary < secondSeatBoundary {
 					secondSeatBoundary = seatBoundary
 				}
 			}
@@ -160,13 +180,11 @@ func nextHalfSeatDown(floatSeat float64) float64 {
 	return float64(doubleSeat) * 0.5
 }
 
-// nearlyEqual compares two float64 numbers if they are equal or nearly equal.
-// Floating point numbers should not be tested for equality, because different
-// calculation methods yield slightly different values for the same result.
-func nearlyEqual(a, b float64) bool {
-	if a == b {
-		return true
+// absUintDiff calculates the absolute value of the difference of two Uints.
+func absUintDiff(a, b uint) uint {
+	if a >= b {
+		return a - b
 	} else {
-		return math.Abs(a-b) < 0.000001
+		return b - a
 	}
 }
