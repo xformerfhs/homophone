@@ -141,6 +141,7 @@ func total[T constraints.Integer](counts []T) uint {
 	return result
 }
 
+// runs returns a map of the values and how many times each one occurs.
 func runs(seats []uint) map[uint]uint {
 	result := make(map[uint]uint)
 	for _, seat := range seats {
