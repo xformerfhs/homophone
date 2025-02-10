@@ -20,11 +20,12 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.1.0
+// Version: 1.2.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
 //    2025-01-02: V1.1.0: Refactored for less complexity.
+//    2025-02-10: V1.2.0: Corrected rune substitution.
 //
 
 package homosubst
