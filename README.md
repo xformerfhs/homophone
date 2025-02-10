@@ -368,7 +368,7 @@ Under Windows, this is the home directory, e.g. `D:\Users\username\go`.
 Under Linux this is `${HOME}/go`.
 In that directory there is a subdirectory `src`.
 
-To create the program, the source code must be stored under `%GOPATH%\src\hashvalue` or `${HOME}/go/src/hashvalue`.
+To create the program, the source code must be stored under `%GOPATH%\src\homophone` or `${HOME}/go/src/homophone`.
 Then one has to start the batch file `gb.bat` or the shell script `gb`, which builds the executables.
 These scripts expect the UPX program to be in a specific location.
 This location can be adapted to the local path.
