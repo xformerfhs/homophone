@@ -33,9 +33,7 @@ package homosubst
 import (
 	"bufio"
 	"homophone/filehelper"
-	"homophone/oshelper"
 	"os"
-	"unicode"
 )
 
 // ******** Public type functions ********
@@ -76,26 +74,27 @@ func (s *Substitutor) encryptFile(
 
 	reader := bufio.NewReader(inFile)
 	writer := bufio.NewWriter(outFile)
-	scanner := bufio.NewScanner(reader)
-	scanner.Split(bufio.ScanLines)
-	for scanner.Scan() {
-		text := scanner.Text()
-		err = s.encryptOneLine(text, writer, keepOthers, outFileName)
+
+	for {
+		var value byte
+		value, err = reader.ReadByte()
 		if err != nil {
-			return err
+			break
 		}
 
-		if keepOthers {
-			_, err = writer.WriteString(oshelper.NewLine)
-			if err != nil {
-				return makeFileError(`write to`, `out`, outFileName, err)
+		switch {
+		case value >= 'a' && value <= 'z':
+			value ^= 'a' ^ 'A'
+			fallthrough
+
+		case value >= 'A' && value <= 'Z':
+			_ = writer.WriteByte(s.SubstituteByte(value))
+
+		default:
+			if keepOthers {
+				_ = writer.WriteByte(value)
 			}
 		}
-	}
-
-	scanErr := scanner.Err()
-	if scanErr != nil {
-		return scanErr
 	}
 
 	err = writer.Flush()
@@ -103,31 +102,5 @@ func (s *Substitutor) encryptFile(
 		return makeFileError(`flush`, `out`, outFileName, err)
 	}
 
-	return nil
-}
-
-// encryptOneLine encrypts one line.
-func (s *Substitutor) encryptOneLine(text string, writer *bufio.Writer, keepOthers bool, outFileName string) error {
-	var err error
-
-	for _, r := range text {
-		switch {
-		case r >= 'a' && r <= 'z':
-			r = unicode.ToUpper(r)
-			fallthrough
-
-		case r >= 'A' && r <= 'Z':
-			_, err = writer.WriteRune(s.SubstituteRune(r))
-
-		default:
-			if keepOthers {
-				_, err = writer.WriteRune(r)
-			}
-		}
-
-		if err != nil {
-			return makeFileError(`write to`, `out`, outFileName, err)
-		}
-	}
 	return nil
 }

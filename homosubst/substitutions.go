@@ -32,18 +32,18 @@ package homosubst
 // ******** Public functions ********
 
 // SubstituteByte substitutes a byte with a rune.
-func (s *Substitutor) SubstituteByte(b byte) rune {
+func (s *Substitutor) SubstituteByte(b byte) byte {
 	if b >= 'A' && b <= 'Z' {
-		return s.substitutions[b-'A'].RandomElement()
+		return byte(s.substitutions[b-'A'].RandomElement())
 	} else {
-		return rune(b)
+		return b
 	}
 }
 
 // SubstituteRune substitutes a rune.
 func (s *Substitutor) SubstituteRune(r rune) rune {
 	if r < 256 {
-		return s.SubstituteByte(byte(r))
+		return s.substitutions[r-'A'].RandomElement()
 	} else {
 		return r
 	}

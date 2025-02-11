@@ -35,14 +35,15 @@ package homosubst
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"homophone/distributor"
 	"homophone/filehelper"
 	"homophone/randomlist"
+	"io"
 	"math"
 	"math/rand/v2"
 	"os"
-	"unicode"
 )
 
 // ******** Private constants ********
@@ -107,25 +108,27 @@ func getFrequenciesFromFile(fileName string) ([]uint, uint, error) {
 	totalCount := uint(0)
 
 	reader := bufio.NewReader(file)
-	scanner := bufio.NewScanner(reader)
-	scanner.Split(bufio.ScanRunes)
-	for scanner.Scan() {
-		text := scanner.Text()
-		for _, r := range text {
-			r = unicode.ToUpper(r)
-			if r >= 'A' && r <= 'Z' {
-				frequencies[r-'A']++
-				totalCount++
+	for {
+		var value byte
+		value, err = reader.ReadByte()
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				return frequencies, totalCount, nil
 			}
+
+			return nil, 0, err
+		}
+
+		switch {
+		case value >= 'a' && value <= 'z':
+			value ^= 'a' ^ 'A'
+			fallthrough
+
+		case value >= 'A' && value <= 'Z':
+			frequencies[value-'A']++
+			totalCount++
 		}
 	}
-
-	scanErr := scanner.Err()
-	if scanErr != nil {
-		return nil, 0, scanErr
-	}
-
-	return frequencies, totalCount, nil
 }
 
 // makeProportions calculates the proportions of each character as the proportion times 100.
