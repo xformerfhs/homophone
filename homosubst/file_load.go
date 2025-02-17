@@ -194,14 +194,14 @@ func loadOneSubstitutionList(listSize uint32, substitutionData []byte, check map
 		}
 
 		substitutionData = substitutionData[readBytes:]
-		entryRune := byte(entry)
+		entryByte := byte(entry)
 
-		if check[entryRune] {
-			return nil, nil, fmt.Errorf(`duplicate substitution entry: '%c'`, entryRune)
+		if check[entryByte] {
+			return nil, nil, fmt.Errorf(`duplicate substitution entry: '%c'`, entryByte)
 		}
 
-		list[i] = entryRune
-		check[entryRune] = true
+		list[i] = entryByte
+		check[entryByte] = true
 	}
 
 	return list, substitutionData, nil
