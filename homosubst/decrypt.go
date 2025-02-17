@@ -20,19 +20,22 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.1.0
+// Version: 1.2.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
 //    2025-01-02: V1.1.0: Refactored for less complexity.
+//    2025-02-17: V1.2.0: Simplified file reader.
 //
 
 package homosubst
 
 import (
 	"bufio"
+	"errors"
 	"homophone/filehelper"
 	"homophone/randomlist"
+	"io"
 	"os"
 )
 
@@ -65,6 +68,7 @@ func (s *Substitutor) Decrypt(encryptedFileName string, decryptedFileName string
 
 // ******** Private type functions ********
 
+// decryptFile decrypts inFile and writes the decrypted to outFile.
 func (s *Substitutor) decryptFile(
 	inFile *os.File,
 	outFile *os.File,
@@ -75,33 +79,19 @@ func (s *Substitutor) decryptFile(
 
 	reader := bufio.NewReader(inFile)
 	writer := bufio.NewWriter(outFile)
-	scanner := bufio.NewScanner(reader)
-	scanner.Split(bufio.ScanRunes)
-	for scanner.Scan() {
-		text := scanner.Text()
-		err = s.decryptOneRune(text, writer, decryptionMap, outFileName)
+
+	for {
+		var r rune
+		r, _, err = reader.ReadRune()
+
 		if err != nil {
-			return err
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
+			return makeFileError(`read from`, `in`, outFileName, err)
 		}
-	}
 
-	scanErr := scanner.Err()
-	if scanErr != nil {
-		return scanErr
-	}
-
-	err = writer.Flush()
-	if err != nil {
-		return makeFileError(`flush`, `out`, outFileName, err)
-	}
-
-	return nil
-}
-
-func (s *Substitutor) decryptOneRune(text string, writer *bufio.Writer, decryptionMap map[rune]rune, outFileName string) error {
-	var err error
-
-	for _, r := range text {
 		decrypted, found := decryptionMap[r]
 		if !found {
 			decrypted = r
@@ -113,11 +103,17 @@ func (s *Substitutor) decryptOneRune(text string, writer *bufio.Writer, decrypti
 		}
 	}
 
+	err = writer.Flush()
+	if err != nil {
+		return makeFileError(`flush`, `out`, outFileName, err)
+	}
+
 	return nil
 }
 
 // ******** Private functions ********
 
+// buildDecryptionMap builds the decryption map from the substitution lists.
 func buildDecryptionMap(substitutions []*randomlist.RandomList[rune]) map[rune]rune {
 	result := make(map[rune]rune)
 	destinationRune := 'A'
