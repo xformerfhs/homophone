@@ -82,7 +82,7 @@ func (s *Substitutor) Save(filePath string) error {
 }
 
 // saveSubstitutions saves the substitution lists.
-func saveSubstitutions(w io.Writer, substitutions []*randomlist.RandomList[rune], size []byte) error {
+func saveSubstitutions(w io.Writer, substitutions []*randomlist.RandomList[byte], size []byte) error {
 	var err error
 
 	// Save all substitution lists.

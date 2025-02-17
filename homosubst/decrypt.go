@@ -72,7 +72,7 @@ func (s *Substitutor) Decrypt(encryptedFileName string, decryptedFileName string
 func (s *Substitutor) decryptFile(
 	inFile *os.File,
 	outFile *os.File,
-	decryptionMap map[rune]rune,
+	decryptionMap map[byte]byte,
 ) error {
 	var err error
 
@@ -80,8 +80,8 @@ func (s *Substitutor) decryptFile(
 	writer := bufio.NewWriter(outFile)
 
 	for {
-		var r rune
-		r, _, err = reader.ReadRune()
+		var r byte
+		r, err = reader.ReadByte()
 
 		if err != nil {
 			if errors.Is(err, io.EOF) {
@@ -96,7 +96,7 @@ func (s *Substitutor) decryptFile(
 			decrypted = r
 		}
 
-		_, err = writer.WriteRune(decrypted)
+		err = writer.WriteByte(decrypted)
 		if err != nil {
 			return makeFileError(`write to`, `out`, outFile.Name(), err)
 		}
@@ -113,14 +113,15 @@ func (s *Substitutor) decryptFile(
 // ******** Private functions ********
 
 // buildDecryptionMap builds the decryption map from the substitution lists.
-func buildDecryptionMap(substitutions []*randomlist.RandomList[rune]) map[rune]rune {
-	result := make(map[rune]rune)
-	destinationRune := 'A'
+func buildDecryptionMap(substitutions []*randomlist.RandomList[byte]) map[byte]byte {
+	result := make(map[byte]byte)
+	destinationByte := byte('A')
 	for _, list := range substitutions {
 		for _, substitution := range list.BaseList() {
-			result[substitution] = destinationRune
+			result[substitution] = destinationByte
 		}
-		destinationRune++
+
+		destinationByte++
 	}
 	return result
 }

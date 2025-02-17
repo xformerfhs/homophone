@@ -20,31 +20,23 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.1.0
+// Version: 2.0.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
 //    2025-01-03: V1.1.0: Use randomlist. Correct rune substitution handling.
+//    2025-02-17: V2.0.0: Handle only bytes.
 //
 
 package homosubst
 
 // ******** Public functions ********
 
-// SubstituteByte substitutes a byte with a rune.
+// SubstituteByte substitutes a byte.
 func (s *Substitutor) SubstituteByte(b byte) byte {
 	if b >= 'A' && b <= 'Z' {
-		return byte(s.substitutions[b-'A'].RandomElement())
+		return s.substitutions[b-'A'].RandomElement()
 	} else {
 		return b
-	}
-}
-
-// SubstituteRune substitutes a rune.
-func (s *Substitutor) SubstituteRune(r rune) rune {
-	if r < 256 {
-		return s.substitutions[r-'A'].RandomElement()
-	} else {
-		return r
 	}
 }

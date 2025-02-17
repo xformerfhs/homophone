@@ -89,7 +89,7 @@ func NewFromFile(substFileName string) (*Substitutor, error) {
 
 	// Load substitutions from read data.
 	var substitutionAlphabetSize uint32
-	var substitutions []*randomlist.RandomList[rune]
+	var substitutions []*randomlist.RandomList[byte]
 	substitutionAlphabetSize, substitutions, err = loadSubstitutionData(substitutionData)
 	if err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ func NewFromFile(substFileName string) (*Substitutor, error) {
 }
 
 // loadSubstitutionData loads all substitution data.
-func loadSubstitutionData(substitutionData []byte) (uint32, []*randomlist.RandomList[rune], error) {
+func loadSubstitutionData(substitutionData []byte) (uint32, []*randomlist.RandomList[byte], error) {
 	var err error
 	var readBytes int
 
@@ -117,7 +117,7 @@ func loadSubstitutionData(substitutionData []byte) (uint32, []*randomlist.Random
 		return 0, nil, fmt.Errorf(`wrong substitution alphabet size: %d`, substitutionAlphabetSize)
 	}
 
-	var substitutions []*randomlist.RandomList[rune]
+	var substitutions []*randomlist.RandomList[byte]
 	substitutions, err = loadSubstitutionLists(substitutionData[readBytes:], substitutionAlphabetSize)
 	if err != nil {
 		return 0, nil, err
@@ -127,13 +127,13 @@ func loadSubstitutionData(substitutionData []byte) (uint32, []*randomlist.Random
 }
 
 // loadSubstitutionLists loads all substitution lists from the substitution data.
-func loadSubstitutionLists(substitutionData []byte, substitutionAlphabetSize uint32) ([]*randomlist.RandomList[rune], error) {
+func loadSubstitutionLists(substitutionData []byte, substitutionAlphabetSize uint32) ([]*randomlist.RandomList[byte], error) {
 	var err error
 	var readBytes int
 
 	// Read all substitution lists.
-	substitutions := make([]*randomlist.RandomList[rune], sourceAlphabetSize)
-	check := make(map[rune]bool)
+	substitutions := make([]*randomlist.RandomList[byte], sourceAlphabetSize)
+	check := make(map[byte]bool)
 	listCount := 0
 	substitutionCount := 0
 	for len(substitutionData) != 0 {
@@ -157,7 +157,7 @@ func loadSubstitutionLists(substitutionData []byte, substitutionAlphabetSize uin
 		}
 
 		// Get the substitution list.
-		var list []rune
+		var list []byte
 		list, substitutionData, err = loadOneSubstitutionList(listSize, substitutionData, check)
 		if err != nil {
 			return nil, err
@@ -180,10 +180,10 @@ func loadSubstitutionLists(substitutionData []byte, substitutionAlphabetSize uin
 }
 
 // loadOneSubstitutionList loads one substitution list from the substitution data.
-func loadOneSubstitutionList(listSize uint32, substitutionData []byte, check map[rune]bool) ([]rune, []byte, error) {
+func loadOneSubstitutionList(listSize uint32, substitutionData []byte, check map[byte]bool) ([]byte, []byte, error) {
 	var err error
 
-	list := make([]rune, listSize)
+	list := make([]byte, listSize)
 
 	var readBytes int
 	var entry uint32
@@ -194,7 +194,7 @@ func loadOneSubstitutionList(listSize uint32, substitutionData []byte, check map
 		}
 
 		substitutionData = substitutionData[readBytes:]
-		entryRune := rune(entry)
+		entryRune := byte(entry)
 
 		if check[entryRune] {
 			return nil, nil, fmt.Errorf(`duplicate substitution entry: '%c'`, entryRune)

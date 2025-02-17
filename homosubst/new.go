@@ -62,8 +62,8 @@ const sourceAlphabetSize uint16 = 26
 
 // NewSubstitutor creates a new substitutor for the given file.
 func NewSubstitutor(sourceFileName string) (*Substitutor, error) {
-	substitutionRunes := []rune(substitutionAlphabet)
-	substitutionAlphabetSize := uint16(len(substitutionRunes))
+	substitutionBytes := []byte(substitutionAlphabet)
+	substitutionAlphabetSize := uint16(len(substitutionBytes))
 
 	result := &Substitutor{}
 
@@ -89,7 +89,7 @@ func NewSubstitutor(sourceFileName string) (*Substitutor, error) {
 	}
 
 	// 3. Build the substitution lists from the lengths.
-	result.substitutions = generateSubstitutions(substitutionLengths, substitutionRunes, substitutionAlphabetSize)
+	result.substitutions = generateSubstitutions(substitutionLengths, substitutionBytes, substitutionAlphabetSize)
 
 	return result, nil
 }
@@ -196,12 +196,12 @@ func initializeSubstitutionLengths(sourceFrequencies []uint, substitutionLengths
 // generateSubstitutions Generate the substitution characters from the lengths per character.
 func generateSubstitutions(
 	substitutionLengths []uint16,
-	substitutionAlphabet []rune,
-	substitutionAlphabetSize uint16) []*randomlist.RandomList[rune] {
+	substitutionAlphabet []byte,
+	substitutionAlphabetSize uint16) []*randomlist.RandomList[byte] {
 	used := make([]bool, substitutionAlphabetSize)
-	result := make([]*randomlist.RandomList[rune], sourceAlphabetSize)
+	result := make([]*randomlist.RandomList[byte], sourceAlphabetSize)
 	for i, substitutionLength := range substitutionLengths {
-		list := make([]rune, substitutionLength)
+		list := make([]byte, substitutionLength)
 		for j := range substitutionLength {
 			list[j] = substitutionAlphabet[getSubstitutionAlphabetIndex(used, substitutionAlphabetSize)]
 		}
