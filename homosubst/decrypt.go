@@ -58,7 +58,7 @@ func (s *Substitutor) Decrypt(encryptedFileName string, decryptedFileName string
 
 	decryptionMap := buildDecryptionMap(s.substitutions)
 
-	err = s.decryptFile(encryptedFile, decryptedFile, decryptionMap, decryptedFileName)
+	err = s.decryptFile(encryptedFile, decryptedFile, decryptionMap)
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,6 @@ func (s *Substitutor) decryptFile(
 	inFile *os.File,
 	outFile *os.File,
 	decryptionMap map[rune]rune,
-	outFileName string,
 ) error {
 	var err error
 
@@ -89,7 +88,7 @@ func (s *Substitutor) decryptFile(
 				break
 			}
 
-			return makeFileError(`read from`, `in`, outFileName, err)
+			return makeFileError(`read from`, `in`, inFile.Name(), err)
 		}
 
 		decrypted, found := decryptionMap[r]
@@ -99,13 +98,13 @@ func (s *Substitutor) decryptFile(
 
 		_, err = writer.WriteRune(decrypted)
 		if err != nil {
-			return makeFileError(`write to`, `out`, outFileName, err)
+			return makeFileError(`write to`, `out`, outFile.Name(), err)
 		}
 	}
 
 	err = writer.Flush()
 	if err != nil {
-		return makeFileError(`flush`, `out`, outFileName, err)
+		return makeFileError(`flush`, `out`, outFile.Name(), err)
 	}
 
 	return nil

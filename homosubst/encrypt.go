@@ -20,12 +20,13 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.2.0
+// Version: 1.3.0
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
 //    2025-01-02: V1.1.0: Refactored for less complexity.
 //    2025-02-10: V1.2.0: Corrected rune substitution.
+//    2025-02-17: V1.3.0: Simplified function call.
 //
 
 package homosubst
@@ -53,7 +54,7 @@ func (s *Substitutor) Encrypt(clearFileName string, encryptedFileName string, ke
 	}
 	defer filehelper.CloseWithName(encryptedFile)
 
-	err = s.encryptFile(clearFile, encryptedFile, keepOthers, encryptedFileName)
+	err = s.encryptFile(clearFile, encryptedFile, keepOthers)
 	if err != nil {
 		return err
 	}
@@ -68,7 +69,6 @@ func (s *Substitutor) encryptFile(
 	inFile *os.File,
 	outFile *os.File,
 	keepOthers bool,
-	outFileName string,
 ) error {
 	var err error
 
@@ -99,7 +99,7 @@ func (s *Substitutor) encryptFile(
 
 	err = writer.Flush()
 	if err != nil {
-		return makeFileError(`flush`, `out`, outFileName, err)
+		return makeFileError(`flush`, `out`, outFile.Name(), err)
 	}
 
 	return nil
