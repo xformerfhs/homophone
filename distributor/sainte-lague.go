@@ -20,12 +20,13 @@
 //
 // Author: Frank Schwab
 //
-// Version: 2.1.0
+// Version: 2.2.0
 //
 // Change history:
 //    2025-02-08: V1.0.0: Created.
 //    2025-02-09: V2.0.0: Use generic interface.
 //    2025-02-10: V2.1.0: Fixed cut off criteria.
+//    2025-02-24: V2.2.0: Reorder diff test for better efficiency.
 //
 
 // Package distributor contains functions to distribute counts to
@@ -54,13 +55,16 @@ func SainteLagueDistribution[T constraints.Integer](counts []T, totalCount uint,
 		distributedSeatCount = seatsForDivisor(counts, divisor, floatSeats, intSeats)
 
 		actSeatCountDiff := absUintDiff(distributedSeatCount, wantedSeatCount)
+
+		// If the seat count difference is zero we are done.
+		if actSeatCountDiff == 0 {
+			break
+		}
+
+		// Otherwise, remember when the smallest difference occurred.
 		if actSeatCountDiff < minSeatCountDiff {
 			minDivisor = divisor
 			minSeatCountDiff = actSeatCountDiff
-		}
-
-		if actSeatCountDiff == 0 {
-			break
 		}
 
 		if lastSeatCountDiff != 0 && actSeatCountDiff >= lastSeatCountDiff {

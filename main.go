@@ -20,7 +20,7 @@
 //
 // Author: Frank Schwab
 //
-// Version: 3.0.0
+// Version: 3.0.1
 //
 // Change history:
 //    2024-09-17: V1.0.0: Created.
@@ -38,6 +38,7 @@
 //    2025-02-11: V2.7.0: Read bytes, instead of runes.
 //    2025-02-17: V2.8.0: Simplify decryption.
 //    2025-02-17: V3.0.0: Work only with bytes, instead of runes.
+//    2025-02-24: V3.0.1: Slightly improved efficiency.
 //
 
 package main
@@ -49,7 +50,7 @@ import (
 )
 
 // myVersion contains the current version of this program.
-const myVersion = `3.0.0`
+const myVersion = `3.0.1`
 
 // myCopyright contains the copyright of this program.
 const myCopyright = `Copyright (c) 2024-2025 Frank Schwab`
