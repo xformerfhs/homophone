@@ -20,13 +20,13 @@
 //
 // Author: Frank Schwab
 //
-// Version: 2.2.0
+// Version: 2.1.1
 //
 // Change history:
 //    2025-02-08: V1.0.0: Created.
 //    2025-02-09: V2.0.0: Use generic interface.
 //    2025-02-10: V2.1.0: Fixed cut off criteria.
-//    2025-02-24: V2.2.0: Reorder diff test for better efficiency.
+//    2025-02-24: V2.1.1: Reorder diff test for better efficiency.
 //
 
 // Package distributor contains functions to distribute counts to
