@@ -41,7 +41,7 @@ import (
 
 // ******** Public type functions ********
 
-// Decrypt decrypts given file with the loaded homophone substitution.
+// Decrypt decrypts the given file with the loaded homophone substitution.
 func (s *Substitutor) Decrypt(encryptedFileName string, decryptedFileName string) error {
 	encryptedFile, err := os.Open(encryptedFileName)
 	if err != nil {
