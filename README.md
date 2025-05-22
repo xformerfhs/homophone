@@ -35,9 +35,9 @@ xychart-beta
 One can see that the `E` stands out quite a bit.
 Also, the `T` can be easily recognized in a text by its frequency.
 
-In order to flatten the statistical distribution of the characters one can map the frequent characters with multiple substitutions.
-For this to work the destination alphabet has to have much more characters than the source alphabet.
-E.g. the rarely occurring character `B` is replaced by `j`, but the frequently occurring `E` is replaced by multiple characters like `yWSqXCBb`.
+In order to flatten the statistical distribution of the characters one can map the frequent characters to multiple substitutions.
+For this to work the destination alphabet has to have more characters than the source alphabet.
+E.g. the rarely occurring character `B` is replaced only by `j`, but the frequently occurring `E` is replaced by multiple characters like `yWSqXCBb`.
 Any of these characters would code for an `E`.
 
 To get the right number of substitution characters one has to count the frequencies of the characters in the source text and adjust the number of substitution characters so that each substitution characters for each source character has about the same probability of occurring.
@@ -59,9 +59,9 @@ xychart-beta
     bar [2.906, 2.593, 2.503, 2.459, 2.325, 2.325, 2.325, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.190, 2.146, 2.146, 2.146, 2.146, 2.101, 2.101, 2.101, 2.101, 2.101, 2.056, 2.012, 2.012, 1.967, 1.967, 1.967, 1.967, 1.967, 1.967, 1.922, 1.922, 1.878, 1.878, 1.878, 1.833, 1.609, 1.207, 0.939, 0.939, 0.626, 0.268, 0.179, 0.045]
 ```
 
-It is easy to see that there are no longer characters standing out, which makes it harder to break the encryption.
+There are no longer characters standing out, which makes it harder to break the encryption.
 However, homophonic encryption can be broken.
-It is just harder, if done right.
+It is just harder, not impossible.
 
 ## Implementation
 
@@ -73,6 +73,10 @@ So 26 source characters are mapped to 52 destination characters.
 On encryption the correct number of substitution characters is calculated for each of the source characters.
 Then each of the substitution characters is randomly assigned.
 Then each character in the clear text is replaced with a random character of its substitution list.
+
+BTW, it is perfectly reasonable that a character is mapped to itself.
+This makes it harder to break the encryption, not weaker.
+If a character is never mapped to itself, one could exclude cleartext words.
 
 The "key" for this encryption are the substitution lists for the characters.
 This key is saved in a separate file.
